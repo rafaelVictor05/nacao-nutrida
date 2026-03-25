@@ -16,15 +16,19 @@ Este repositório contém o projeto "Nação Nutrida", desenvolvido para o 6º s
 - **front_web/**: Aplicação web desenvolvida em React com TypeScript. Inclui frontend e configurações do cliente.
   - `src/`: Código fonte do frontend React.
   - `public/`: Arquivos estáticos para o frontend.
-  - `docs/`: Documentação adicional do projeto.
   - `package.json`: Dependências e scripts do projeto Node.js para o front-end.
 
 - **back_end/**: Backend da aplicação desenvolvido em Node.js com TypeScript. Inclui API, configurações do servidor e banco de dados.
   - `server/`: Código do backend em Node.js/TypeScript, incluindo API e configurações do Prisma para banco de dados.
 
-- **documentacao/**:
-
-- **README.md**: Este arquivo, contendo informações sobre o projeto e sua estrutura.
+- **documentacao/**: Pasta contendo toda a documentação do projeto.
+  - `docs/`: Documentação técnica detalhada.
+    - `Gestao_Agil_De_Projetos/`: Documentação sobre a metodologia de gestão ágil utilizadas no projeto.
+    - `Modelagem_Banco/`: Modelagem e diagramas do banco de dados (conceitual e lógico).
+    - `NoAM.drawio`: Diagrama da arquitetura em formato DrawIO.
+    - `NoAM.png` e `NoAM.svg`: Visualizações do diagrama de arquitetura.
+    - `RUP.docx`: Documentação sobre o processo RUP (Rational Unified Process) aplicado ao projeto.
+  - `P.I. 6 DSM - Nação Nutrida.docx`: Documento principal do projeto integrador com requisitos, especificações e planejamento.
 
 ## Escopo do Projeto
 
