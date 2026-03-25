@@ -133,7 +133,7 @@ Localização: `front_mobile/lib/`
 
 ### Modelagem Conceitual
 
-<img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/documentacao/docs/Modelagem_Banco/modelagemConceitual.png" alt="Modelagem conceitual do banco de dados" width="45%">
+<img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/documentacao/docs/Modelagem_Banco/modelagemConceitual.png" alt="Modelagem conceitual do banco de dados" width="65%">
 
 O diagrama conceitual inclui as seguintes entidades principais:
 - **USUÁRIO** (cria campanhas, faz doações)
@@ -150,7 +150,7 @@ Relacionamentos:
 
 ### Modelagem Lógica (MongoDB com Prisma)
 
-<img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/documentacao/docs/NoAM.png" alt="Modelagem lógica do banco de dados" width="45%">
+<img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/documentacao/docs/NoAM.png" alt="Modelagem lógica do banco de dados" width="65%">
 
 **Coleções Principais:**
 
