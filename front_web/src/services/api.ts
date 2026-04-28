@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://20.15.107.242:5000",
+  baseURL: process.env.REACT_APP_API_URL || "/api",
 });
 
 // Interceptor para adicionar o token em cada requisição
