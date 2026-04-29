@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/openapi.json",
-      "destination": "http://20.15.107.242:5000/openapi.json"
-    },
-    {
       "source": "/docs",
       "destination": "http://20.15.107.242:5000/docs/"
     },
