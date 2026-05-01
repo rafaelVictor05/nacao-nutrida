@@ -52,7 +52,7 @@ def criar_transacoes(df):
     print("Criando transações por campanha...")
 
     # Agrupar alimentos por campanha
-    transacoes = df.groupby('cd_campanha')['nm_alimento'].apply(list)
+    transacoes = df.groupby('cd_campanha')['nm_alimento'].apply(list).tolist()
 
     return transacoes
 
@@ -67,7 +67,7 @@ def transformar_matriz(transacoes):
     te = TransactionEncoder()
     te_array = te.fit(transacoes).transform(transacoes)
 
-    df_final = pd.DataFrame(te_array, columns=te.columns_).astype(int)
+    df_final = pd.DataFrame(te_array, columns=te.columns_).astype(bool)
 
     return df_final
 
@@ -113,6 +113,16 @@ def main():
     # 6. Salvar
     salvar_dados(df_final)
 
+def gerar_base_tratada():
+    print("Gerando base tratada para Apriori...")
+    
+    doacoes, alimentos = carregar_dados()
+    doacoes, alimentos = limpar_dados(doacoes, alimentos)
+    df = juntar_dados(doacoes, alimentos)
+    transacoes = criar_transacoes(df)
+    df_final = transformar_matriz(transacoes)
+    
+    return df_final
 
 # =========================
 # RODAR SCRIPT
