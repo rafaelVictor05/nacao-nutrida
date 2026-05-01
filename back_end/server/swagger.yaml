@@ -1,0 +1,483 @@
+openapi: 3.0.0
+info:
+  title: Nação Nutrida API
+  description: API da plataforma de doação de alimentos
+  version: 1.0.0
+  contact:
+    name: Grupo 6 - DSM PI 2026/1
+
+servers:
+  - url: http://20.15.107.242:5000/api
+    description: Servidor de desenvolvimento (Azure)
+  - url: http://localhost:5000/api
+    description: Servidor local
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UsuarioCadastro:
+      type: object
+      required: [user_infos]
+      properties:
+        user_infos:
+          type: object
+          required:
+            - tipo_usuario
+            - nm_usuario
+            - cd_email_usuario
+            - nr_celular_usuario
+            - cd_senha_usuario
+            - sg_estado_usuario
+            - nm_cidade_usuario
+          properties:
+            tipo_usuario:
+              type: string
+              enum: [pf, pj]
+            nm_usuario:
+              type: string
+              example: "Rafael Silva"
+            ch_cpf_usuario:
+              type: string
+              example: "12345678909"
+            ch_cnpj_usuario:
+              type: string
+            cd_email_usuario:
+              type: string
+              format: email
+            nr_celular_usuario:
+              type: string
+            cd_senha_usuario:
+              type: string
+              format: password
+            sg_estado_usuario:
+              type: string
+              example: "SP"
+            nm_cidade_usuario:
+              type: string
+              example: "Franca"
+            dt_nascimento_usuario:
+              type: string
+              format: date-time
+
+    UsuarioLogin:
+      type: object
+      required: [user_email, user_password]
+      properties:
+        user_email:
+          type: string
+          format: email
+        user_password:
+          type: string
+          format: password
+
+    CriarCampanha:
+      type: object
+      required: [infos_campanha, alimentos_campanha]
+      properties:
+        infos_campanha:
+          type: object
+          properties:
+            usuario_id:
+              type: string
+            nm_titulo_campanha:
+              type: string
+            dt_encerramento_campanha:
+              type: string
+              format: date-time
+            nm_cidade_campanha:
+              type: string
+            sg_estado_campanha:
+              type: string
+            ds_acao_campanha:
+              type: string
+            fg_campanha_ativa:
+              type: boolean
+        alimentos_campanha:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              qt_alimento_meta:
+                type: integer
+
+    RegistrarDoacao:
+      type: object
+      required: [infos_doacao, alimentos_doacao]
+      properties:
+        infos_doacao:
+          type: object
+          properties:
+            usuario_doacao:
+              type: string
+            cd_campanha_doacao:
+              type: string
+        alimentos_doacao:
+          type: array
+          items:
+            type: object
+            properties:
+              alimento_id:
+                type: string
+              qt_alimento_doacao:
+                type: integer
+
+paths:
+  /usuarioCadastro:
+    post:
+      tags: [Usuário]
+      summary: Cadastra um novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioCadastro'
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+        '400':
+          description: Erro de validação ou email/CPF já cadastrado
+
+  /usuarioLogin:
+    post:
+      tags: [Usuário]
+      summary: Autentica usuário e retorna JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioLogin'
+      responses:
+        '200':
+          description: Login bem-sucedido, retorna token JWT
+        '401':
+          description: Credenciais inválidas
+
+  /perfil:
+    get:
+      tags: [Usuário]
+      summary: Retorna dados do usuário autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dados do usuário
+        '401':
+          description: Token ausente ou inválido
+
+  /usuarios:
+    get:
+      tags: [Usuário]
+      summary: Lista todos os usuários
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuários
+
+  /usuario/nome/{id}:
+    get:
+      tags: [Usuário]
+      summary: Busca nome do usuário pelo ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Nome do usuário
+
+  /usuario/{id}:
+    patch:
+      tags: [Usuário]
+      summary: Atualiza dados do usuário
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nm_usuario:
+                  type: string
+                nr_celular_usuario:
+                  type: string
+                sg_estado_usuario:
+                  type: string
+                nm_cidade_usuario:
+                  type: string
+                cd_foto_usuario:
+                  type: string
+      responses:
+        '200':
+          description: Usuário atualizado
+
+  /campanhas:
+    get:
+      tags: [Campanha]
+      summary: Lista todas as campanhas ativas
+      responses:
+        '200':
+          description: Lista de campanhas
+    post:
+      tags: [Campanha]
+      summary: Cria uma nova campanha
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarCampanha'
+      responses:
+        '201':
+          description: Campanha criada
+
+  /campanhas/minhas:
+    get:
+      tags: [Campanha]
+      summary: Lista campanhas do usuário logado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de campanhas do usuário
+
+  /campanhas/buscar:
+    get:
+      tags: [Campanha]
+      summary: Busca campanhas por localização
+      parameters:
+        - in: query
+          name: sg_estado_campanha
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: nm_cidade_campanha
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Campanhas encontradas
+
+  /campanhas/{id}:
+    get:
+      tags: [Campanha]
+      summary: Busca campanha por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados da campanha
+        '404':
+          description: Campanha não encontrada
+
+  /campanhas/{id}/doacoes:
+    get:
+      tags: [Campanha]
+      summary: Lista doações de uma campanha
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de doações
+
+  /campanhas/desativar/{id}:
+    patch:
+      tags: [Campanha]
+      summary: Desativa uma campanha do usuário logado
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Campanha desativada
+
+  /doacoes:
+    post:
+      tags: [Doação]
+      summary: Registra uma nova doação
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrarDoacao'
+      responses:
+        '201':
+          description: Doação registrada
+
+  /doacoes/minhas:
+    get:
+      tags: [Doação]
+      summary: Lista doações do usuário logado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de doações
+
+  /alimentos:
+    get:
+      tags: [Alimento]
+      summary: Lista alimentos agrupados por tipo
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Alimentos agrupados
+
+  /alimentosDoados:
+    get:
+      tags: [Alimento]
+      summary: Lista todos os registros de alimentos doados
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de doações de alimentos
+
+  /estadosCidades:
+    get:
+      tags: [Localidade]
+      summary: Lista estados e cidades do Brasil (IBGE)
+      responses:
+        '200':
+          description: Lista de estados e cidades
+
+  /chat/conversations:
+    get:
+      tags: [Chat]
+      summary: Lista conversas do usuário
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de conversas
+    post:
+      tags: [Chat]
+      summary: Cria uma nova conversa
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, adminId]
+              properties:
+                userId:
+                  type: string
+                adminId:
+                  type: string
+      responses:
+        '200':
+          description: Conversa criada
+
+  /chat/messages:
+    get:
+      tags: [Chat]
+      summary: Lista mensagens de uma conversa
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: conversationId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de mensagens
+    post:
+      tags: [Chat]
+      summary: Envia uma mensagem
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [conversationId, senderId, text]
+              properties:
+                conversationId:
+                  type: string
+                senderId:
+                  type: string
+                text:
+                  type: string
+      responses:
+        '200':
+          description: Mensagem enviada
+
+  /chat/conversations/{id}:
+    delete:
+      tags: [Chat]
+      summary: Exclui uma conversa
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversa excluída
