@@ -481,3 +481,221 @@ paths:
       responses:
         '200':
           description: Conversa excluída
+
+  /mineracao/regras:
+    get:
+      tags: [Mineração]
+      summary: Retorna todas as regras de associação
+      description: Lista completa das regras de associação geradas pelo algoritmo Apriori
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de regras retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 15
+                  regras:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        antecedents:
+                          type: string
+                          example: "Arroz"
+                        consequents:
+                          type: string
+                          example: "Feijão"
+                        support:
+                          type: number
+                          example: 0.35
+                        confidence:
+                          type: number
+                          example: 0.75
+                        lift:
+                          type: number
+                          example: 1.85
+        '401':
+          description: Não autenticado
+        '500':
+          description: Erro ao buscar regras
+
+  /mineracao/recomendacoes:
+    get:
+      tags: [Mineração]
+      summary: Obter recomendações de alimentos por um alimento específico
+      description: Retorna sugestões de alimentos correlacionados baseado em padrões históricos de doação
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: alimento
+          required: true
+          schema:
+            type: string
+            example: "Arroz"
+          description: Nome do alimento para gerar recomendações
+      responses:
+        '200':
+          description: Recomendações retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alimento:
+                    type: string
+                    example: "Arroz"
+                  total:
+                    type: integer
+                    example: 3
+                  recomendacoes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        alimentoOrigem:
+                          type: string
+                          example: "Arroz"
+                        alimentoSugerido:
+                          type: string
+                          example: "Feijão"
+                        confianca:
+                          type: number
+                          example: 0.75
+                        lift:
+                          type: number
+                          example: 1.85
+                        forca:
+                          type: string
+                          enum: ["Muito Forte", "Forte", "Moderada", "Fraca"]
+                          example: "Forte"
+        '400':
+          description: Parâmetro 'alimento' é obrigatório
+        '401':
+          description: Não autenticado
+        '500':
+          description: Erro ao buscar recomendações
+
+    post:
+      tags: [Mineração]
+      summary: Obter recomendações para múltiplos alimentos
+      description: Retorna sugestões combinadas de alimentos para vários itens de entrada
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [alimentos]
+              properties:
+                alimentos:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Arroz", "Feijão", "Milho"]
+      responses:
+        '200':
+          description: Recomendações múltiplas retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alimentosConsultados:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Arroz", "Feijão"]
+                  total:
+                    type: integer
+                    example: 5
+                  recomendacoes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        alimentoOrigem:
+                          type: string
+                        alimentoSugerido:
+                          type: string
+                        confianca:
+                          type: number
+                        lift:
+                          type: number
+                        forca:
+                          type: string
+        '400':
+          description: Body deve conter um array 'alimentos' não vazio
+        '401':
+          description: Não autenticado
+        '500':
+          description: Erro ao buscar recomendações múltiplas
+
+  /mineracao/estatisticas:
+    get:
+      tags: [Mineração]
+      summary: Obter estatísticas das regras de mineração
+      description: Retorna métricas agregadas sobre todas as regras de associação
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Estatísticas retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Estatísticas das regras de mineração"
+                  estatisticas:
+                    type: object
+                    properties:
+                      totalRegras:
+                        type: integer
+                        example: 15
+                      confiancaMedia:
+                        type: number
+                        example: 0.67
+                      liftMedio:
+                        type: number
+                        example: 1.52
+                      supportMedio:
+                        type: number
+                        example: 0.23
+        '401':
+          description: Não autenticado
+        '500':
+          description: Erro ao buscar estatísticas
+
+  /mineracao/recarregar:
+    post:
+      tags: [Mineração]
+      summary: Recarregar regras do arquivo CSV
+      description: Recarrega as regras de mineração a partir do arquivo CSV (útil após regenerar a mineração em Python)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Regras recarregadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Regras recarregadas com sucesso"
+        '401':
+          description: Não autenticado
+        '500':
+          description: Erro ao recarregar regras
