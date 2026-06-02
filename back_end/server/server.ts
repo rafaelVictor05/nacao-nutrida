@@ -5,6 +5,7 @@ import alimentoRouter from "./src/routes/alimento.routes";
 import campanhaRouter from "./src/routes/campanhas.routes";
 import doacaoRouter from "./src/routes/doacao.routes";
 import localidadeRouter from "./config/routes/localidade.router";
+import mineraoRouter from "./src/routes/mineracao.routes";
 import cors from "cors";
 import chatRouter from "./src/routes/chat.routes";
 import swaggerUi from "swagger-ui-express";
@@ -27,6 +28,7 @@ app.use("/api", alimentoRouter);
 app.use("/api", campanhaRouter);
 app.use("/api", doacaoRouter);
 app.use("/api", localidadeRouter);
+app.use("/api", mineraoRouter);
 app.use("/api", chatRouter);
 
 app.listen(5000, "0.0.0.0", () => {
