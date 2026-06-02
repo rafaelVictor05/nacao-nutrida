@@ -1,10 +1,12 @@
 import { Router } from "express";
+import { PrismaClient } from "@prisma/client";
 import MineraoService from "../services/MineraoService";
 import MineraoController from "../controllers/MineraoController";
 import authMiddleware from "../middlewares/authMiddleware";
 
+const prisma = new PrismaClient();
 const mineraoService = new MineraoService();
-const mineraoController = new MineraoController(mineraoService);
+const mineraoController = new MineraoController(mineraoService, prisma);
 
 const mineraoRouter = Router();
 
@@ -57,6 +59,16 @@ mineraoRouter.post(
   "/mineracao/recarregar",
   authMiddleware,
   mineraoController.recarregarRegras
+);
+
+/**
+ * GET /api/mineracao/historico
+ * Retorna histórico de versões de mineração
+ */
+mineraoRouter.get(
+  "/mineracao/historico",
+  authMiddleware,
+  mineraoController.obterHistoricoVersoes
 );
 
 export default mineraoRouter;

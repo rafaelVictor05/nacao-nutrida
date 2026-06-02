@@ -78,3 +78,18 @@ model message {
   createdAt      DateTime @default(now())
   conversation   conversation @relation(fields: [conversationId], references: [id])
 }
+
+model mineracao_regra {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  versao       Int      @default(1)
+  antecedents  String
+  consequents  String
+  support      Float
+  confidence   Float
+  lift         Float
+  dt_geracao   DateTime @default(now())
+  ativo        Boolean  @default(true)
+
+  @@index([versao])
+  @@index([dt_geracao])
+}
