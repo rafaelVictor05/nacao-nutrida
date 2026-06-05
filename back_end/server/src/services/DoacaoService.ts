@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { RegistrarDoacaoDTO } from "../schemas/doacao.schema";
+import { sendMessage } from "./ServiceBusService";
 
 export default class DoacaoService {
   private prisma: PrismaClient;
@@ -24,6 +25,17 @@ export default class DoacaoService {
     const resultado = await this.prisma.alimento_doacao.createMany({
       data: dadosParaInserir,
     });
+
+    void sendMessage("fila1", {
+      evento: "nova_doacao",
+      campanha_id: infos_doacao.cd_campanha_doacao,
+      usuario_id: infos_doacao.usuario_doacao,
+      alimentos: alimentos_doacao.map((a) => ({
+        alimento_id: a.alimento_id,
+        quantidade: a.qt_alimento_doacao,
+      })),
+      timestamp: new Date().toISOString(),
+    }).catch((err) => console.error("[ServiceBus] Falha ao enviar mensagem:", err));
 
     return resultado;
   }

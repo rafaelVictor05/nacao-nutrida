@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import { startServiceBusConsumer } from "./src/services/ServiceBusConsumer";
 import usuarioRouter from "./src/routes/usuario.routes";
 import alimentoRouter from "./src/routes/alimento.routes";
 import campanhaRouter from "./src/routes/campanhas.routes";
@@ -30,4 +31,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
+  startServiceBusConsumer();
 });
