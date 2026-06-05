@@ -49,13 +49,11 @@ export default class MineraoDbService {
         })
         .on("end", async () => {
           try {
-            // Desativar versão anterior
-            await this.prisma.mineracao_regra.updateMany(
-              {
-                where: { versao: versao - 1 },
-              },
-              { ativo: false }
-            );
+            // CORRIGIDO: Passando where e data no mesmo objeto
+            await this.prisma.mineracao_regra.updateMany({
+              where: { versao: versao - 1 },
+              data: { ativo: false },
+            });
 
             // Inserir novas regras
             await this.prisma.mineracao_regra.createMany({

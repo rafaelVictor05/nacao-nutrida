@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import { startServiceBusConsumer } from "./src/services/ServiceBusConsumer";
 import usuarioRouter from "./src/routes/usuario.routes";
 import alimentoRouter from "./src/routes/alimento.routes";
 import campanhaRouter from "./src/routes/campanhas.routes";
@@ -15,7 +16,11 @@ import path from "path";
 dotenv.config({ path: "../.env" });
 
 const app = express();
-app.use(cors()); // libera qualquer origem
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 
 // Express routes
 app.use(express.json());
@@ -31,6 +36,10 @@ app.use("/api", localidadeRouter);
 app.use("/api", mineraoRouter);
 app.use("/api", chatRouter);
 
-app.listen(5000, "0.0.0.0", () => {
-  console.log("Server started on port 5000");
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+  startServiceBusConsumer();
 });

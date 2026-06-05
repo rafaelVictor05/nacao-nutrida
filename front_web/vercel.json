@@ -1,0 +1,24 @@
+{
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "http://20.15.107.242:5000/docs/",
+      "permanent": false
+    },
+    {
+      "source": "/docs/:match*",
+      "destination": "http://20.15.107.242:5000/docs/:match*",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "http://20.15.107.242:5000/api/:match*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
