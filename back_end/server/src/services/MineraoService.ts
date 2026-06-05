@@ -25,7 +25,7 @@ export default class MineraoService {
   constructor() {
     this.caminhoRegras = path.join(
       __dirname,
-      "../../..",
+      "../../../..",
       "mineracao/regras_associacao.csv"
     );
     this.carregarRegras();
