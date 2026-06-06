@@ -36,7 +36,7 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
 
   Future<void> _fetchEstadosCidades() async {
     // Tenta buscar do backend com até 2 tentativas. Se falhar, usa fallback embutido para dev.
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
     int attempts = 0;
     while (attempts < 2) {
       attempts += 1;
@@ -55,10 +55,10 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
           });
           return;
         } else {
-          print('Falha ao buscar estadosCidades: ' + resp.body);
+          debugPrint('Falha ao buscar estadosCidades: ${resp.body}');
         }
       } catch (e) {
-        print('Tentativa $attempts: erro ao buscar estadosCidades: $e');
+        debugPrint('Tentativa $attempts: erro ao buscar estadosCidades: $e');
         // se última tentativa, siga para fallback
         if (attempts >= 2) break;
         await Future.delayed(const Duration(milliseconds: 300));
@@ -87,7 +87,7 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
       }
     });
     // opcional: log para dev
-    print('Usando fallback local de estadosCidades (dev)');
+    debugPrint('Usando fallback local de estadosCidades (dev)');
   }
 
   Future<void> _fetchCampanhas({String? estado, String? cidade}) async {
@@ -96,7 +96,7 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
       _error = null;
     });
 
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
     try {
       final resp = await api.get('/campanhas');
       if (resp.statusCode == 200) {

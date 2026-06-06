@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../models/auth_manager.dart';
 import '../services/api_service.dart';
 import '../config/api.dart';
-import 'package:flutter/services.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -36,12 +35,12 @@ class _LoginFormState extends State<LoginForm> {
     }
 
     setState(() => _loading = true);
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
     try {
       final ok = await api.login(email, password);
+      if (!mounted) return;
       if (ok) {
         final authManager = Provider.of<AuthManager>(context, listen: false);
-        // Caso o backend não retorne dados do usuário, usamos um login simplificado
         authManager.login(name: email.split('@').first, email: email);
         Navigator.of(context).pushNamed('/descobrir-campanha');
       } else {
@@ -50,6 +49,7 @@ class _LoginFormState extends State<LoginForm> {
         ).showSnackBar(const SnackBar(content: Text('Credenciais inválidas')));
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Erro ao conectar: $e')));

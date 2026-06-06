@@ -1,4 +1,7 @@
 class ApiConfig {
+  // Servidor remoto
+  static const String baseUrl = 'http://20.15.107.242:5000/api';
+
   // Emulador Android (AVD) mapeia localhost da máquina host
   static const String baseUrlAndroid = 'http://10.0.2.2:5000/api';
 

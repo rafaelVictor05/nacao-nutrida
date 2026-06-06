@@ -4,6 +4,7 @@ import '../config/api.dart';
 import 'dart:convert';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 class CadastroUsuarioForm extends StatefulWidget {
   const CadastroUsuarioForm({super.key});
@@ -14,7 +15,11 @@ class CadastroUsuarioForm extends StatefulWidget {
 
 class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
   bool isPessoaFisica = true;
-  List<Map<String, dynamic>> _estadosCidades = [];
+  // IBGE direto: lista de siglas de estados e cidades do estado selecionado
+  List<String> _estados = [];
+  List<String> _cidades = [];
+  bool _loadingEstados = false;
+  bool _loadingCidades = false;
   String? _selectedEstado;
   String? _selectedCidade;
   final _formKey = GlobalKey<FormState>();
@@ -147,72 +152,68 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
                 inputFormatters: [_celMask],
               ),
               const SizedBox(height: 16),
-              // Estado e Cidade como dropdowns preenchidos via API
+              // Estado — carregado direto da API do IBGE
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value:
-                    _selectedEstado ??
-                    (_estadosCidades.isNotEmpty
-                        ? _estadosCidades[0]['sg_estado'] as String
-                        : null),
-                items: _estadosCidades
-                    .map(
-                      (e) => DropdownMenuItem<String>(
-                        value: e['sg_estado'] as String,
-                        child: Text(e['sg_estado'] as String),
+              _loadingEstados
+                  ? const Center(child: CircularProgressIndicator())
+                  : DropdownButtonFormField<String>(
+                      value: _selectedEstado,
+                      items: _estados
+                          .map((sg) => DropdownMenuItem<String>(
+                                value: sg,
+                                child: Text(sg),
+                              ))
+                          .toList(),
+                      onChanged: (v) {
+                        setState(() {
+                          _selectedEstado = v;
+                          _selectedCidade = null;
+                          _cidadeController.text = '';
+                          _cidades = [];
+                        });
+                        if (v != null) _fetchCidades(v);
+                      },
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Estado',
                       ),
-                    )
-                    .toList(),
-                onChanged: (v) {
-                  setState(() {
-                    _selectedEstado = v;
-                    // quando muda o estado, atualiza cidade e limpa controller
-                    _selectedCidade = null;
-                    _cidadeController.text = '';
-                  });
-                },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Estado',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty)
-                    return 'Campo obrigatório';
-                  return null;
-                },
-              ),
+                      validator: (value) =>
+                          (value == null || value.isEmpty)
+                              ? 'Campo obrigatório'
+                              : null,
+                    ),
               const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: _selectedCidade,
-                items:
-                    (_estadosCidades.firstWhere(
-                              (e) => e['sg_estado'] == _selectedEstado,
-                              orElse: () => {'cidades': <String>[]},
-                            )['cidades']
-                            as List<dynamic>)
-                        .map(
-                          (c) => DropdownMenuItem<String>(
-                            value: c,
-                            child: Text(c),
-                          ),
-                        )
-                        .toList(),
-                onChanged: (v) {
-                  setState(() {
-                    _selectedCidade = v;
-                    _cidadeController.text = v ?? '';
-                  });
-                },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Cidade',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty)
-                    return 'Campo obrigatório';
-                  return null;
-                },
-              ),
+              // Cidade — carregada após selecionar estado
+              _loadingCidades
+                  ? const Center(child: CircularProgressIndicator())
+                  : DropdownButtonFormField<String>(
+                      value: _selectedCidade,
+                      items: _cidades
+                          .map((c) => DropdownMenuItem<String>(
+                                value: c,
+                                child: Text(c),
+                              ))
+                          .toList(),
+                      onChanged: _selectedEstado == null
+                          ? null
+                          : (v) {
+                              setState(() {
+                                _selectedCidade = v;
+                                _cidadeController.text = v ?? '';
+                              });
+                            },
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: 'Cidade',
+                        hintText: _selectedEstado == null
+                            ? 'Selecione um estado primeiro'
+                            : 'Selecione a cidade',
+                      ),
+                      validator: (value) =>
+                          (value == null || value.isEmpty)
+                              ? 'Campo obrigatório'
+                              : null,
+                    ),
               const SizedBox(height: 16),
               _buildFormField(
                 'Senha',
@@ -250,26 +251,56 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
   @override
   void initState() {
     super.initState();
-    _fetchEstadosCidades();
+    _fetchEstados();
   }
 
-  Future<void> _fetchEstadosCidades() async {
+  /// Busca apenas a lista de siglas de estados diretamente no IBGE.
+  /// Chamada única e leve (~27 itens).
+  Future<void> _fetchEstados() async {
+    setState(() => _loadingEstados = true);
     try {
-      final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
-      final resp = await api.get('/estadosCidades');
+      final uri = Uri.parse(
+        'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome',
+      );
+      final resp = await http.get(uri).timeout(const Duration(seconds: 15));
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as List<dynamic>;
         setState(() {
-          _estadosCidades = data.map((e) => e as Map<String, dynamic>).toList();
-          if (_estadosCidades.isNotEmpty) {
-            _selectedEstado = _estadosCidades[0]['sg_estado'] as String;
-          }
+          _estados = data
+              .map((e) => (e['sigla'] as String))
+              .toList();
         });
       } else {
-        print('Falha ao buscar estadosCidades: ' + resp.body);
+        debugPrint('IBGE estados falhou: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Erro ao buscar estadosCidades: $e');
+      debugPrint('Erro ao buscar estados do IBGE: $e');
+    } finally {
+      setState(() => _loadingEstados = false);
+    }
+  }
+
+  /// Busca as cidades do estado selecionado diretamente no IBGE.
+  /// Chamada apenas quando o usuário escolhe um estado.
+  Future<void> _fetchCidades(String sigla) async {
+    setState(() => _loadingCidades = true);
+    try {
+      final uri = Uri.parse(
+        'https://servicodados.ibge.gov.br/api/v1/localidades/estados/$sigla/municipios?orderBy=nome',
+      );
+      final resp = await http.get(uri).timeout(const Duration(seconds: 15));
+      if (resp.statusCode == 200) {
+        final data = jsonDecode(resp.body) as List<dynamic>;
+        setState(() {
+          _cidades = data.map((e) => e['nome'] as String).toList();
+        });
+      } else {
+        debugPrint('IBGE cidades falhou: ${resp.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Erro ao buscar cidades do IBGE: $e');
+    } finally {
+      setState(() => _loadingCidades = false);
     }
   }
 
@@ -285,7 +316,7 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
     }
 
     setState(() => _loading = true);
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
 
     // Normaliza cpf/cnpj: envia somente dígitos para o backend
     String? cpfDigits;
@@ -296,10 +327,7 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
     if (!isPessoaFisica) cnpjDigits = onlyDigits;
 
     final estadoToSend =
-        _selectedEstado ??
-        (_estadosCidades.isNotEmpty
-            ? _estadosCidades[0]['sg_estado'] as String
-            : _estadoController.text.trim());
+        _selectedEstado ?? _estadoController.text.trim();
     final cidadeToSend = _selectedCidade ?? _cidadeController.text.trim();
 
     // Converte data dd/MM/yyyy para ISO-8601 (aceito pelo Prisma)
@@ -341,15 +369,16 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
       final path = '/usuarioCadastro';
       final payload = {'user_infos': userInfos};
       // Logs para depuração
-      print(
-        '>>> Cadastrando usuário - POST ' + ApiConfig.baseUrlAndroid + path,
+      debugPrint(
+        '>>> Cadastrando usuário - POST ${ApiConfig.baseUrl}$path',
       );
-      print('>>> Payload: ' + jsonEncode(payload));
+      debugPrint('>>> Payload: ${jsonEncode(payload)}');
 
       final resp = await api.post(path, payload);
+      if (!mounted) return;
 
-      print('<<< Response status: ${resp.statusCode}');
-      print('<<< Response body: ${resp.body}');
+      debugPrint('<<< Response status: ${resp.statusCode}');
+      debugPrint('<<< Response body: ${resp.body}');
 
       if (resp.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -369,9 +398,9 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
         ).showSnackBar(SnackBar(content: Text(msg)));
       }
     } catch (e, st) {
-      // Log detalhado de exceção
-      print('!!! Exception ao cadastrar usuário: $e');
-      print(st);
+      debugPrint('!!! Exception ao cadastrar usuário: $e');
+      debugPrint(st.toString());
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Erro: $e')));
@@ -462,8 +491,9 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
               try {
                 final dt = DateTime(y, m, d);
                 // verifica se a data foi construída corretamente
-                if (dt.day != d || dt.month != m || dt.year != y)
+                if (dt.day != d || dt.month != m || dt.year != y) {
                   return 'Data inválida';
+                }
                 final now = DateTime.now();
                 if (dt.isAfter(now)) return 'Data no futuro';
                 final age =
@@ -505,7 +535,7 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
       }
     } catch (e) {
       // caso ocorra algo inesperado, apenas logamos
-      print('Erro ao selecionar data: $e');
+      debugPrint('Erro ao selecionar data: $e');
     }
   }
 }

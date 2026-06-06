@@ -250,7 +250,7 @@ class _CadastroCampanhaFormState extends State<CadastroCampanhaForm> {
   }
 
   Future<void> _criarCampanha() async {
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
 
     // Validações mínimas
     if (tituloController.text.trim().isEmpty) {
@@ -269,6 +269,7 @@ class _CadastroCampanhaFormState extends State<CadastroCampanhaForm> {
     try {
       // Obter usuário logado para pegar id
       final perfilResp = await api.get('/usuario/perfil');
+      if (!mounted) return;
       if (perfilResp.statusCode != 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -312,6 +313,7 @@ class _CadastroCampanhaFormState extends State<CadastroCampanhaForm> {
       };
 
       final resp = await api.post('/campanhas', payload);
+      if (!mounted) return;
       if (resp.statusCode == 201 || resp.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -329,6 +331,7 @@ class _CadastroCampanhaFormState extends State<CadastroCampanhaForm> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red),
       );

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ProfileAvatar extends StatelessWidget {
   final double size;
 
-  const ProfileAvatar({Key? key, this.size = 100}) : super(key: key);
+  const ProfileAvatar({super.key, this.size = 100});
 
   @override
   Widget build(BuildContext context) {

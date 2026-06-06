@@ -9,7 +9,7 @@ import '../services/api_service.dart';
 import '../config/api.dart';
 
 class EditarPerfilPage extends StatefulWidget {
-  const EditarPerfilPage({Key? key}) : super(key: key);
+  const EditarPerfilPage({super.key});
 
   @override
   State<EditarPerfilPage> createState() => _EditarPerfilPageState();
@@ -42,7 +42,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
 
   Future<void> _fetchPerfil() async {
     setState(() => _loading = true);
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
     try {
       final resp = await api.get('/perfil');
       if (resp.statusCode == 200) {
@@ -68,7 +68,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
   }
 
   Future<void> _fetchEstadosCidades() async {
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
     try {
       final resp = await api.get('/estadosCidades');
       if (resp.statusCode == 200) {
@@ -100,7 +100,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
     final payload = {
       'nm_usuario': _nomeCtrl.text,
       'nr_celular_usuario': _celularCtrl.text,
@@ -224,7 +224,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                                 Expanded(
                                   child: _editing
                                       ? DropdownButtonFormField<String>(
-                                          value: _selectedEstado,
+                                          initialValue: _selectedEstado,
                                           items: _estadosCidades
                                               .map((e) {
                                                 final label =
@@ -259,7 +259,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                                 Expanded(
                                   child: _editing
                                       ? DropdownButtonFormField<String>(
-                                          value: _selectedCidade,
+                                          initialValue: _selectedCidade,
                                           items: (() {
                                             List<dynamic> cidades = [];
                                             try {
@@ -278,10 +278,11 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                                                 'cidades',
                                               )) {
                                                 final maybe = found['cidades'];
-                                                if (maybe is List)
+                                                if (maybe is List) {
                                                   cidades = maybe;
-                                                else if (maybe is String)
+                                                } else if (maybe is String) {
                                                   cidades = [maybe];
+                                                }
                                               }
                                             } catch (_) {
                                               cidades = [];

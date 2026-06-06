@@ -14,6 +14,7 @@ import 'screens/analytics_dashboard.dart';
 import 'screens/dados_perfil.dart';
 import 'screens/editar_perfil.dart';
 import 'screens/painel_screen.dart';
+import 'screens/chat.dart';
 
 void main() {
   runApp(
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/perfil': (context) => DadosPerfil(),
         '/editar-perfil': (context) => const EditarPerfilPage(),
         '/painel': (context) => const PainelScreen(),
+        '/chat': (context) => const ChatScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/detalhes-campanha') {

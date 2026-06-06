@@ -5,8 +5,7 @@ class HeaderLogin extends StatelessWidget implements PreferredSizeWidget {
   final bool showBack;
   final VoidCallback? onBack;
 
-  const HeaderLogin({Key? key, this.showBack = false, this.onBack})
-      : super(key: key);
+  const HeaderLogin({super.key, this.showBack = false, this.onBack});
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -70,11 +69,9 @@ class HeaderLogin extends StatelessWidget implements PreferredSizeWidget {
   // --- FUNÇÃO DE LOGOUT ---
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Remove dados de login
     await prefs.clear();
 
-    // Mostra mensagem de saída
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Logout realizado com sucesso.'),
@@ -82,8 +79,6 @@ class HeaderLogin extends StatelessWidget implements PreferredSizeWidget {
         duration: Duration(seconds: 2),
       ),
     );
-
-    // Redireciona para tela de inicial
     Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
   }
 

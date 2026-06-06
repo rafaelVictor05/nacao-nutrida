@@ -8,13 +8,13 @@ class ProfileField extends StatelessWidget {
   final bool compact;
 
   const ProfileField({
-    Key? key,
+    super.key,
     required this.label,
     required this.value,
     this.keyboardType = TextInputType.text,
     this.enabled = false,
     this.compact = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

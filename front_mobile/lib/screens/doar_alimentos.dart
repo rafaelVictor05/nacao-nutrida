@@ -520,11 +520,12 @@ class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
   }
 
   Future<void> _postDoacao() async {
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
 
     try {
       // 1) Buscar perfil do usuário para obter o ID
       final perfilResp = await api.get('/usuario/perfil');
+      if (!mounted) return;
       if (perfilResp.statusCode != 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -548,6 +549,7 @@ class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
 
       // 2) Garantir que temos os alimento_ids: buscar campanha completa
       final campanhaResp = await api.get('/campanhas/${widget.campanha.id}');
+      if (!mounted) return;
       if (campanhaResp.statusCode != 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -603,6 +605,7 @@ class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
       };
 
       final resp = await api.post('/doacoes', payload);
+      if (!mounted) return;
       if (resp.statusCode == 201 || resp.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -619,6 +622,7 @@ class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Falha ao registrar doação: $e'),

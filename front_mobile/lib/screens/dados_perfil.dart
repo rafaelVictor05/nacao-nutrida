@@ -9,7 +9,7 @@ import 'dart:convert';
 // image picker and intl removed to avoid adding new dependencies here
 
 class DadosPerfil extends StatefulWidget {
-  DadosPerfil({super.key});
+  const DadosPerfil({super.key});
 
   @override
   State<DadosPerfil> createState() => _DadosPerfilState();
@@ -34,7 +34,7 @@ class _DadosPerfilState extends State<DadosPerfil> {
       _error = null;
     });
 
-    final api = ApiService(baseUrl: ApiConfig.baseUrlAndroid);
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
     try {
       final resp = await api.get('/perfil');
       if (resp.statusCode == 200) {
@@ -114,7 +114,7 @@ class _DadosPerfilState extends State<DadosPerfil> {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withValues(alpha: 0.2),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
