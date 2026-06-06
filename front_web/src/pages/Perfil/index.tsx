@@ -56,7 +56,7 @@ const Perfil: React.FC = () => {
 
     async function fetchPerfil() {
       try {
-        const res = await api.get(`/api/perfil`);
+        const res = await api.get(`/perfil`);
         if (res.data.nr_celular_usuario) {
           res.data.nr_celular_usuario = formatarCelular(
             res.data.nr_celular_usuario
@@ -85,7 +85,7 @@ const Perfil: React.FC = () => {
 
   useEffect(() => {
     api
-      .get<IEstadoCidades[]>("/api/estadosCidades")
+      .get<IEstadoCidades[]>("/estadosCidades")
       .then((response) => {
         setListaEstadosCidades(response.data);
       })
@@ -175,7 +175,7 @@ const Perfil: React.FC = () => {
     };
 
     try {
-      const res = await api.patch(`/api/usuario/${user!.id}`, userUpdatedInfos);
+      const res = await api.patch(`/usuario/${user!.id}`, userUpdatedInfos);
 
       const perfilAtualizado = {
         ...res.data,

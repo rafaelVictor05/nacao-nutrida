@@ -27,7 +27,7 @@ const Food: React.FC<FoodProps> = ({ id, delFood }) => {
 
   useEffect(() => {
     api
-      .get<IAlimentoLista[]>("/api/alimentos")
+      .get<IAlimentoLista[]>("/alimentos")
       .then((response) => setListaCategoriaAlimentos(response.data))
       .catch((err) => console.log("Error: " + err));
   }, []);
@@ -150,7 +150,7 @@ export const CriacaoCampanha = () => {
 
   useEffect(() => {
     api
-      .get("/api/estadosCidades")
+      .get("/estadosCidades")
       .then((response) => setListaEstadosCidades(response.data))
       .catch((err) => console.log("Error: " + err));
   }, []);
@@ -259,7 +259,7 @@ export const CriacaoCampanha = () => {
 
     const dbInsert = async () => {
       try {
-        const response = await api.post("/api/campanhas", {
+        const response = await api.post("/campanhas", {
           infos_campanha,
           alimentos_campanha,
         });

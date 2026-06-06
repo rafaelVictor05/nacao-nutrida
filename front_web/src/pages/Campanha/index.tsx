@@ -17,7 +17,7 @@ export const Campanha = () => {
   const [refreshData, setRefreshData] = useState(false);
 
   const { _id } = useParams();
-  const url = `/api/campanhas/${_id}`;
+  const url = `/campanhas/${_id}`;
 
   useEffect(() => {
     if (_id) {
@@ -37,12 +37,22 @@ export const Campanha = () => {
   }, [_id, url, refreshData]);
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [recomendacoes, setRecomendacoes] = useState<string[]>([]);
 
   const handleCloseModal = () => {
     if (!user.user || !user.user.id || user.user.id === "") {
       toast.error("Por favor, efetue o login na sua conta para doar.");
       navigate("/login");
       return;
+    }
+    if (!modalVisible && campanha) {
+      const alimentosDaCampanha = campanha.alimentos.map((a: any) => a.nm_alimento);
+      api.post("/mineracao/recomendacoes", { alimentos: alimentosDaCampanha })
+        .then(res => {
+          const data = res.data.recomendacoes || res.data || [];
+          setRecomendacoes(data.map((r: any) => r.alimentoSugerido ?? r));
+        })
+        .catch(() => setRecomendacoes([]));
     }
     setModalVisible(!modalVisible);
   };
@@ -127,7 +137,7 @@ export const Campanha = () => {
 
     const dbInsert = async () => {
       try {
-        const response = await api.post("/api/doacoes", {
+        const response = await api.post("/doacoes", {
           infos_doacao: infos_doacao,
           alimentos_doacao: alimentos_doacao,
         });
@@ -234,6 +244,20 @@ export const Campanha = () => {
                 </div>
               </div>
 
+              {recomendacoes.length > 0 && (
+                <div style={{margin: "0.8rem 0", padding: "0.9rem 1.2rem", background: "#e3f2fd", borderRadius: 10, border: "1.5px solid #1976d2"}}>
+                  <p style={{color: "#1976d2", fontWeight: 700, fontSize: "1.1rem", marginBottom: 8}}>
+                    Quem doou estes alimentos também doou:
+                  </p>
+                  <div style={{display: "flex", flexWrap: "wrap", gap: 8}}>
+                    {recomendacoes.map((alimento, i) => (
+                      <span key={i} style={{background: "#1976d2", color: "#fff", borderRadius: 16, padding: "3px 12px", fontWeight: 600, fontSize: "1rem"}}>
+                        {alimento}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="comentario column">
                 <label>Adicione um comentário (opcional)</label>
                 <textarea className="input-form" name="descricao"></textarea>

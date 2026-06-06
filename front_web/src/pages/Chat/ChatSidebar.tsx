@@ -16,7 +16,7 @@ const ChatSidebar = ({ conversations, selected, onSelect }: any) => {
       await Promise.all(uniqueIds.map(async (id) => {
         const idStr = String(id);
         try {
-          const res = await api.get(`/api/usuario/nome/${idStr}`);
+          const res = await api.get(`/usuario/nome/${idStr}`);
           names[idStr] = res.data.nome;
         } catch {
           names[idStr] = idStr;
@@ -32,7 +32,7 @@ const ChatSidebar = ({ conversations, selected, onSelect }: any) => {
     const userId = localStorage.getItem("userId");
     if (!window.confirm("Tem certeza que deseja excluir este chat?")) return;
     try {
-      await api.delete(`/api/chat/conversations/${convId}?userId=${userId}`);
+      await api.delete(`/chat/conversations/${convId}?userId=${userId}`);
       // Remove da lista local
       if (typeof onSelect === 'function' && selected?.id === convId) onSelect(null);
       // Atualiza lista (ideal: refetch, mas aqui filtra local)

@@ -1,7 +1,7 @@
 {
   "name": "nacao-nutrida-web",
   "version": "0.1.0",
-  "proxy": "http://localhost:5000",
+  "proxy": "http://20.15.107.242:5000",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",

@@ -19,7 +19,7 @@ export const Descobrir = () => {
 
   useEffect(() => {
     api
-      .get<IEstadoCidades[]>("/api/estadosCidades")
+      .get<IEstadoCidades[]>("/estadosCidades")
       .then((response) => {
         setListaEstadosCidades(response.data);
       })
@@ -73,8 +73,8 @@ export const Descobrir = () => {
     try {
       const endpoint =
         estado && cidade
-          ? `/api/campanhas/buscar?sg_estado_campanha=${estado}&nm_cidade_campanha=${cidade}`
-          : "/api/campanhas";
+          ? `/campanhas/buscar?sg_estado_campanha=${estado}&nm_cidade_campanha=${cidade}`
+          : "/campanhas";
 
       const response = await api.get(endpoint);
       setCampanhas(response.data);

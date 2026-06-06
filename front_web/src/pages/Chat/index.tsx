@@ -18,20 +18,20 @@ const ChatPage: React.FC = () => {
 
   useEffect(() => {
     if (userId) {
-      api.get(`/api/chat/conversations?userId=${userId}`).then(res => setConversations(res.data));
+      api.get(`/chat/conversations?userId=${userId}`).then(res => setConversations(res.data));
     }
   }, [userId]);
 
   useEffect(() => {
     if (selected) {
-  api.get(`/api/chat/messages?conversationId=${selected.id}&userId=${userId}`).then(res => setMessages(res.data));
+  api.get(`/chat/messages?conversationId=${selected.id}&userId=${userId}`).then(res => setMessages(res.data));
       // Buscar nome do outro usuário para exibir no topo
       if (userId && adminId && selected.users) {
         if (userId === adminId) {
           // admin logado, mostra nome do outro usuário
           const found = selected.users.find((id: string) => id !== adminId);
           if (found) {
-            api.get(`/api/usuario/nome/${found}`).then(res => setOtherUserName(res.data.nome)).catch(() => setOtherUserName("Usuário"));
+            api.get(`/usuario/nome/${found}`).then(res => setOtherUserName(res.data.nome)).catch(() => setOtherUserName("Usuário"));
           }
         } else {
           // usuário comum, não mostra nada no topo
@@ -43,7 +43,7 @@ const ChatPage: React.FC = () => {
 
   const handleSend = async (text: string) => {
     if (!selected) return;
-    const res = await api.post("/api/chat/messages", {
+    const res = await api.post("/chat/messages", {
       conversationId: selected.id,
       senderId: userId,
       text,
@@ -57,7 +57,7 @@ const ChatPage: React.FC = () => {
       window.alert("Usuário ou admin não definido. Faça login ou defina o adminId.");
       return;
     }
-    const res = await api.post("/api/chat/conversations", {
+    const res = await api.post("/chat/conversations", {
       userId,
       adminId
     });

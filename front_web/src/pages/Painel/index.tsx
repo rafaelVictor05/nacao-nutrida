@@ -56,19 +56,41 @@ const Painel: React.FC = () => {
   const [doacoesCampanha, setDoacoesCampanha] = useState<DoacaoCampanha[]>([]);
   const [loadingDoacoes, setLoadingDoacoes] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
+  const [recomendacoes, setRecomendacoes] = useState<string[]>([]);
 
   useEffect(() => {
-    api.get("/api/perfil").then(res => setIsAdmin(res.data.fg_admin === 1));
-    api.get(isAdmin ? "/api/campanhas" : "/api/campanhas/minhas")
+    api.get("/perfil").then(res => setIsAdmin(res.data.fg_admin === 1));
+    api.get(isAdmin ? "/campanhas" : "/campanhas/minhas")
       .then(res => setCampanhas(res.data));
-    api.get("/api/doacoes/minhas")
-      .then(res => setDoacoes(res.data));
+    api.get("/doacoes/minhas")
+      .then(res => {
+        const data: Doacao[] = res.data;
+        setDoacoes(data);
+
+        const alimentosDoados = data.flatMap(d =>
+          d.alimentos_doados.map(a => a.alimento.nome)
+        );
+        const alimentosUnicos = [...new Set(alimentosDoados)];
+
+        if (alimentosUnicos.length > 0) {
+          api.post("/mineracao/recomendacoes", { alimentos: alimentosUnicos })
+            .then(recRes => {
+              const data = recRes.data.recomendacoes || recRes.data || [];
+              const sugeridos: string[] = data.map((r: any) => r.alimentoSugerido ?? r);
+              const unicos = [...new Set(sugeridos)].filter(
+                s => !alimentosUnicos.includes(s)
+              );
+              setRecomendacoes(unicos);
+            })
+            .catch(() => setRecomendacoes([]));
+        }
+      });
   }, [isAdmin]);
 
   function handleOpenModal(camp: Campanha) {
     setModalCampanha(camp);
     setLoadingDoacoes(true);
-    api.get(`/api/campanhas/${camp.id}/doacoes`)
+    api.get(`/campanhas/${camp.id}/doacoes`)
       .then(res => setDoacoesCampanha(res.data))
       .catch(() => setDoacoesCampanha([]))
       .finally(() => setLoadingDoacoes(false));
@@ -83,7 +105,7 @@ const Painel: React.FC = () => {
     if (!modalCampanha) return;
     setExcluindo(true);
     try {
-      await api.patch(`/api/campanhas/desativar/${modalCampanha.id}`);
+      await api.patch(`/campanhas/desativar/${modalCampanha.id}`);
       setCampanhas(campanhas.filter((c: Campanha) => c.id !== modalCampanha.id));
       handleCloseModal();
     } catch (err) {
@@ -102,6 +124,26 @@ const Painel: React.FC = () => {
             <button className={aba === "campanhas" ? "active" : ""} onClick={() => setAba("campanhas")}>Minhas campanhas</button>
             <button className={aba === "doacoes" ? "active" : ""} onClick={() => setAba("doacoes")}>Minhas doações</button>
           </div>
+          {aba === "doacoes" && recomendacoes.length > 0 && (
+            <div style={{margin: "1.5rem 0", padding: "1.2rem 1.5rem", background: "#e3f2fd", borderRadius: 12, border: "2px solid #1976d2"}}>
+              <h3 style={{color: "#1976d2", fontWeight: 800, fontSize: "1.5rem", marginBottom: 10}}>
+                Recomendado para você
+              </h3>
+              <p style={{color: "#444", fontSize: "1.15rem", marginBottom: 12}}>
+                Com base nas suas doações anteriores, considere também doar:
+              </p>
+              <div style={{display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 14}}>
+                {recomendacoes.map((alimento, i) => (
+                  <span key={i} style={{background: "#1976d2", color: "#fff", borderRadius: 20, padding: "4px 16px", fontWeight: 600, fontSize: "1.1rem"}}>
+                    {alimento}
+                  </span>
+                ))}
+              </div>
+              <a href="/descobrir" style={{color: "#1976d2", fontWeight: 700, fontSize: "1.1rem", textDecoration: "underline"}}>
+                Encontrar campanhas →
+              </a>
+            </div>
+          )}
           {aba === "campanhas" ? (
             <div className="painel-cards">
               {campanhas.length === 0 ? <p>Nenhuma campanha encontrada.</p> : campanhas.map((camp: Campanha) => (

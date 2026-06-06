@@ -54,7 +54,7 @@ export const Cadastro = () => {
 
   useEffect(() => {
     api
-      .get("/api/estadosCidades")
+      .get("/estadosCidades")
       .then((response) => {
         setListaEstadosCidades(response.data);
       })
@@ -201,7 +201,7 @@ export const Cadastro = () => {
 
     const handleDBInsert = async () => {
       try {
-        const response = await api.post("/api/usuarioCadastro", {
+        const response = await api.post("/usuarioCadastro", {
           user_infos: user_infos,
         });
 
