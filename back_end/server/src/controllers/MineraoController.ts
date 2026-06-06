@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import path from "path";
 import MineraoService from "../services/MineraoService";
 import MineraoDbService from "../services/MineraoDbService";
 import { PrismaClient } from "@prisma/client";
@@ -155,10 +156,17 @@ export default class MineraoController {
    */
   async recarregarRegras(req: Request, res: Response): Promise<Response> {
     try {
-      await this.mineraoService.recarregarRegras();
+      const caminhoCSV = path.join(
+        __dirname,
+        "../../../..",
+        "mineracao",
+        "regras_associacao.csv"
+      );
+      const versao = await this.mineraoDbService.carregarRegrasDoCSV(caminhoCSV);
 
       return res.status(200).json({
-        message: "Regras recarregadas com sucesso",
+        message: `Regras recarregadas com sucesso — versão ${versao}`,
+        versao,
       });
     } catch (error: any) {
       console.error("Erro ao recarregar regras:", error);
