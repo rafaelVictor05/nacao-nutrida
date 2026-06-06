@@ -7,6 +7,7 @@ import { ICampanhaAlimento } from "../../types/ICampanha";
 import { IEstadoCidades } from "../../types/IEstadoCidade";
 import api from "../../services/api";
 import { toast } from "sonner";
+import { imagemCampanha } from "../../utils/campanha-imagem";
 
 export const Descobrir = () => {
   const [campanhas, setCampanhas] = useState<ICampanhaAlimento[]>([]);
@@ -211,7 +212,7 @@ export const Descobrir = () => {
                   <div className="campanha">
                     <div className="imagem-campanha">
                       <img
-                        src={`/assets/campanhas/${campanha.cd_imagem_campanha}`}
+                        src={imagemCampanha(campanha.id_campanha, campanha.cd_imagem_campanha)}
                         alt=""
                       />
                     </div>

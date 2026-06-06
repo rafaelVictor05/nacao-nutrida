@@ -3,6 +3,7 @@ import api from "../../services/api";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import "./painel.scss";
+import { imagemCampanha } from "../../utils/campanha-imagem";
 
 interface Campanha {
   id: string;
@@ -40,9 +41,9 @@ interface Doacao {
     alimento: {
       id: string;
       nome: string;
+      sg_medida?: string;
     };
     quantidade: number;
-    // Adicionar id_doacao se backend retornar
     id_doacao?: string;
   }[];
 }
@@ -125,56 +126,60 @@ const Painel: React.FC = () => {
             <button className={aba === "doacoes" ? "active" : ""} onClick={() => setAba("doacoes")}>Minhas doações</button>
           </div>
           {aba === "doacoes" && recomendacoes.length > 0 && (
-            <div style={{margin: "1.5rem 0", padding: "1.2rem 1.5rem", background: "#e3f2fd", borderRadius: 12, border: "2px solid #1976d2"}}>
-              <h3 style={{color: "#1976d2", fontWeight: 800, fontSize: "1.5rem", marginBottom: 10}}>
-                Recomendado para você
-              </h3>
-              <p style={{color: "#444", fontSize: "1.15rem", marginBottom: 12}}>
-                Com base nas suas doações anteriores, considere também doar:
-              </p>
-              <div style={{display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 14}}>
+            <div className="painel-recomendacoes">
+              <div className="painel-recomendacoes-header">
+                <h3>Recomendado para você</h3>
+              </div>
+              <p>Com base nas suas doações anteriores, considere também doar:</p>
+              <div className="painel-recomendacoes-tags">
                 {recomendacoes.map((alimento, i) => (
-                  <span key={i} style={{background: "#1976d2", color: "#fff", borderRadius: 20, padding: "4px 16px", fontWeight: 600, fontSize: "1.1rem"}}>
-                    {alimento}
-                  </span>
+                  <span key={i} className="painel-recomendacoes-tag">{alimento}</span>
                 ))}
               </div>
-              <a href="/descobrir" style={{color: "#1976d2", fontWeight: 700, fontSize: "1.1rem", textDecoration: "underline"}}>
-                Encontrar campanhas →
-              </a>
+              <a href="/descobrir" className="painel-recomendacoes-link">Encontrar campanhas →</a>
             </div>
           )}
           {aba === "campanhas" ? (
             <div className="painel-cards">
               {campanhas.length === 0 ? <p>Nenhuma campanha encontrada.</p> : campanhas.map((camp: Campanha) => (
                 <div className="painel-card" key={camp.id}>
-                  <img src={`/assets/campanhas/${camp.cd_imagem_campanha}`} alt={camp.nm_titulo_campanha} />
-                  <h3>{camp.nm_titulo_campanha}</h3>
-                  <p>{camp.ds_acao_campanha}</p>
-                  <p><strong>Alimentos:</strong> {camp.alimentos.map((a: { nm_alimento: string }) => a.nm_alimento).join(", ")}</p>
-                  <button onClick={() => handleOpenModal(camp)}>Gerenciar campanha</button>
+                  <img src={imagemCampanha(camp.id, camp.cd_imagem_campanha)} alt={camp.nm_titulo_campanha} />
+                  <div className="painel-card-body">
+                    <h3>{camp.nm_titulo_campanha}</h3>
+                    <p>{camp.ds_acao_campanha}</p>
+                    <div className="painel-card-tags">
+                      {camp.alimentos.map((a) => (
+                        <span key={a.nm_alimento} className="painel-card-tag">{a.nm_alimento}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="painel-card-footer">
+                    <button onClick={() => handleOpenModal(camp)}>Gerenciar campanha</button>
+                  </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="painel-cards">
-            {doacoes.length === 0 ? <p>Nenhuma doação encontrada.</p> : doacoes.map((doa: Doacao, idx: number) => (
-              <div className="painel-card" key={doa.campanha.id} style={{padding:'1.2rem 1.2rem', minWidth:200, maxWidth:340, boxShadow:'0 2px 12px rgba(25,118,210,0.13)', border:'2px solid #1976d2'}}>
-                <h3 style={{fontSize:'1.7rem', color:'#1976d2', marginBottom:6, fontWeight:800, letterSpacing:1}}>{doa.campanha.nome}</h3>
-                <p style={{fontSize:'1.22rem', color:'#333', marginBottom:4}}><strong>Cidade:</strong> {doa.campanha.cidade} - {doa.campanha.estado}</p>
-                <div style={{marginTop:10, width:'100%'}}>
-                  <span style={{fontWeight:700, color:'#1976d2', fontSize:'1.25rem'}}>Alimentos doados:</span>
-                  <ul style={{paddingLeft:20, margin:'10px 0', fontSize:'1.18rem'}}>
-                    {doa.alimentos_doados.map((a, i) => (
-                      <li key={a.alimento.id} style={{marginBottom:4, fontWeight:600, color:'#1256a3', fontSize:'1.15rem'}}>
-                        {a.alimento.nome} <span style={{color:'#333', fontWeight:500}}>- {a.quantidade}</span> {a.id_doacao && (<span style={{color:'#1976d2', fontWeight:400}}> (ID: {a.id_doacao})</span>)}
+              {doacoes.length === 0 ? <p>Nenhuma doação encontrada.</p> : doacoes.map((doa: Doacao) => (
+                <div className="painel-card-doacao" key={doa.campanha.id}>
+                  <h3>{doa.campanha.nome}</h3>
+                  <p className="painel-doacao-local">
+                    <img src="/assets/img/icone_pin.svg" alt="Localização" />
+                    {doa.campanha.cidade}, {doa.campanha.estado}
+                  </p>
+                  <span className="painel-doacao-label">Alimentos doados:</span>
+                  <ul>
+                    {doa.alimentos_doados.map((a) => (
+                      <li key={a.alimento.id}>
+                        {a.alimento.nome}
+                        <span>{a.quantidade}{a.alimento.sg_medida ? ` ${a.alimento.sg_medida}` : " un."}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           )}
         </div>
       </main>
@@ -184,7 +189,7 @@ const Painel: React.FC = () => {
           <div style={{background:"#fff", borderRadius:16, padding:32, minWidth:340, maxWidth:480, width:"100%", boxShadow:"0 4px 32px rgba(0,0,0,0.18)", position:"relative"}}>
             <button style={{position:"absolute", top:12, right:16, fontSize:22, background:"none", border:"none", cursor:"pointer"}} onClick={handleCloseModal}>&times;</button>
             <h2>{modalCampanha.nm_titulo_campanha}</h2>
-            <img src={`/assets/campanhas/${modalCampanha.cd_imagem_campanha}`} alt={modalCampanha.nm_titulo_campanha} style={{width:"100%", maxWidth:220, height:140, objectFit:"cover", borderRadius:12, marginBottom:12}} />
+            <img src={imagemCampanha(modalCampanha.id, modalCampanha.cd_imagem_campanha)} alt={modalCampanha.nm_titulo_campanha} style={{width:"100%", maxWidth:220, height:140, objectFit:"cover", borderRadius:12, marginBottom:12}} />
             <p><strong>Descrição:</strong> {modalCampanha.ds_acao_campanha}</p>
             <p><strong>Dias restantes:</strong> {modalCampanha.dias_restantes ?? "-"}</p>
             <p><strong>Alimentos:</strong> {modalCampanha.alimentos.map((a: { nm_alimento: string }) => a.nm_alimento).join(", ")}</p>

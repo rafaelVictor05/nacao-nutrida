@@ -5,6 +5,7 @@ import { Footer } from "../../components/Footer";
 import { Navbar } from "../../components/Navbar";
 
 import { ICampanhaAlimento } from "../../types/ICampanha";
+import { imagemCampanha } from "../../utils/campanha-imagem";
 import { UserContext } from "../../contexts/userContext";
 import api from "../../services/api";
 import { toast } from "sonner";
@@ -165,9 +166,30 @@ export const Campanha = () => {
         } else {
           console.log("Sucesso ao salvar dados no banco ", responseData);
           setModalVisible(false);
-          toast.success("Doação realizada com sucesso!");
           setRefreshData((prev) => !prev);
           event.target.reset();
+
+          try {
+            const campanhaAtualizada = await api.get<ICampanhaAlimento>(url);
+            const alimentos = Array.isArray(campanhaAtualizada.data.alimentos)
+              ? campanhaAtualizada.data.alimentos
+              : [campanhaAtualizada.data.alimentos];
+            const campanhaCompleta = alimentos.every(
+              (a: any) => a.qt_alimento_doado >= a.qt_alimento_meta
+            );
+            if (campanhaCompleta) {
+              await api.patch(`/campanhas/desativar/${_id}`);
+              toast.success(
+                "🎉 Sua doação completou a campanha! Muito obrigado por fazer a diferença!",
+                { duration: 7000 }
+              );
+              navigate("/descobrir");
+            } else {
+              toast.success("Doação realizada com sucesso!");
+            }
+          } catch {
+            toast.success("Doação realizada com sucesso!");
+          }
         }
       } catch (error) {
         console.error("Erro ao inserir dados:", error);
@@ -275,7 +297,7 @@ export const Campanha = () => {
                 <div className="container-descricao">
                   <div className="container-img">
                     <img
-                      src={`/assets/campanhas/${campanha.cd_imagem_campanha}`}
+                      src={imagemCampanha(_id!, campanha.cd_imagem_campanha)}
                       alt=""
                     />
                   </div>
