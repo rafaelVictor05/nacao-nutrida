@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../config/api.dart';
@@ -32,6 +33,12 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
   final _estadoController = TextEditingController();
   final _senhaController = TextEditingController();
   final _confirmSenhaController = TextEditingController();
+  final _nomeFocus = FocusNode();
+  final _cpfCnpjFocus = FocusNode();
+  final _emailFocus = FocusNode();
+  final _celularFocus = FocusNode();
+  final _senhaFocus = FocusNode();
+  final _confirmSenhaFocus = FocusNode();
   bool _loading = false;
   final _cpfMask = MaskTextInputFormatter(
     mask: '###.###.###-##',
@@ -115,17 +122,23 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
               _buildFormField(
                 isPessoaFisica ? 'Nome completo' : 'Nome da empresa',
                 controller: _nomeController,
+                focusNode: _nomeFocus,
+                nextFocus: _cpfCnpjFocus,
               ),
               const SizedBox(height: 16),
               isPessoaFisica
                   ? _buildFormField(
                       'CPF',
                       controller: _cpfCnpjController,
+                      focusNode: _cpfCnpjFocus,
+                      nextFocus: _emailFocus,
                       inputFormatters: [_cpfMask],
                     )
                   : _buildFormField(
                       'CNPJ',
                       controller: _cpfCnpjController,
+                      focusNode: _cpfCnpjFocus,
+                      nextFocus: _emailFocus,
                       inputFormatters: [_cnpjMask],
                     ),
               const SizedBox(height: 16),
@@ -133,6 +146,8 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
                 'Email',
                 isEmail: true,
                 controller: _emailController,
+                focusNode: _emailFocus,
+                nextFocus: _celularFocus,
                 hintText: 'exemplo@email.com',
               ),
               const SizedBox(height: 16),
@@ -140,7 +155,6 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
                 _buildFormField(
                   'Data de nascimento',
                   controller: _nascimentoController,
-                  // tornamos somente leitura e abrimos o date picker
                   readOnly: true,
                   onTap: _selectDate,
                   suffixIcon: const Icon(Icons.calendar_today, size: 18),
@@ -149,6 +163,8 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
               _buildFormField(
                 'Celular',
                 controller: _celularController,
+                focusNode: _celularFocus,
+                nextFocus: _senhaFocus,
                 inputFormatters: [_celMask],
               ),
               const SizedBox(height: 16),
@@ -219,12 +235,16 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
                 'Senha',
                 isPassword: true,
                 controller: _senhaController,
+                focusNode: _senhaFocus,
+                nextFocus: _confirmSenhaFocus,
               ),
               const SizedBox(height: 16),
               _buildFormField(
                 'Confirmação de senha',
                 isPassword: true,
                 controller: _confirmSenhaController,
+                focusNode: _confirmSenhaFocus,
+                textInputAction: TextInputAction.done,
               ),
               const SizedBox(height: 16),
               SizedBox(
@@ -252,6 +272,11 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
   void initState() {
     super.initState();
     _fetchEstados();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _nomeFocus.requestFocus();
+      });
+    });
   }
 
   /// Busca apenas a lista de siglas de estados diretamente no IBGE.
@@ -420,6 +445,12 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
     _estadoController.dispose();
     _senhaController.dispose();
     _confirmSenhaController.dispose();
+    _nomeFocus.dispose();
+    _cpfCnpjFocus.dispose();
+    _emailFocus.dispose();
+    _celularFocus.dispose();
+    _senhaFocus.dispose();
+    _confirmSenhaFocus.dispose();
     super.dispose();
   }
 
@@ -429,10 +460,14 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
     bool isEmail = false,
     TextEditingController? controller,
     List<TextInputFormatter>? inputFormatters,
-    String? hintText, // novo parâmetro
+    String? hintText,
     bool readOnly = false,
     VoidCallback? onTap,
     Widget? suffixIcon,
+    FocusNode? focusNode,
+    FocusNode? nextFocus,
+    TextInputAction textInputAction = TextInputAction.next,
+    bool autofocus = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,13 +479,27 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
+          autofocus: autofocus,
           inputFormatters: inputFormatters,
           readOnly: readOnly,
           onTap: onTap,
           obscureText: isPassword,
-          keyboardType: isEmail
-              ? TextInputType.emailAddress
-              : TextInputType.text,
+          textInputAction: textInputAction,
+          keyboardType: isPassword
+              ? TextInputType.visiblePassword
+              : isEmail
+                  ? TextInputType.emailAddress
+                  : TextInputType.text,
+          onFieldSubmitted: readOnly
+              ? null
+              : (_) {
+                  if (nextFocus != null) {
+                    FocusScope.of(context).requestFocus(nextFocus);
+                  } else {
+                    FocusScope.of(context).unfocus();
+                  }
+                },
           decoration: InputDecoration(
             hintText: hintText,
             suffixIcon: suffixIcon,

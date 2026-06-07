@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/auth_manager.dart';
@@ -14,13 +15,27 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
   bool _loading = false;
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _emailFocus.requestFocus();
+      });
+    });
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
     super.dispose();
   }
 
@@ -76,15 +91,23 @@ class _LoginFormState extends State<LoginForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _emailController,
+              focusNode: _emailFocus,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
               decoration: const InputDecoration(
                 labelText: 'Email',
                 labelStyle: TextStyle(color: Color(0xFF191929), fontSize: 14),
               ),
-              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _passwordController,
+              focusNode: _passwordFocus,
+              keyboardType: TextInputType.visiblePassword,
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _submit(),
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 labelText: 'Senha',
                 labelStyle: const TextStyle(
@@ -99,7 +122,6 @@ class _LoginFormState extends State<LoginForm> {
                       setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
-              obscureText: _obscurePassword,
             ),
             const SizedBox(height: 8),
             const Align(
