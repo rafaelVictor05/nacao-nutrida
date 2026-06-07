@@ -31,49 +31,11 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
   List<Map<String, dynamic>> _estadosCidades = [];
   bool _usingFallbackEstados = false;
 
-  // Recomendações por mineração
-  List<String> _recomendacoes = [];
-
   @override
   void initState() {
     super.initState();
     _fetchEstadosCidades();
     _fetchCampanhas();
-    _fetchRecomendacoes();
-  }
-
-  Future<void> _fetchRecomendacoes() async {
-    final api = ApiService(baseUrl: ApiConfig.baseUrl);
-    try {
-      final resp = await api.get('/doacoes/minhas');
-      if (resp.statusCode != 200) return;
-      final doacoes = (jsonDecode(utf8.decode(resp.bodyBytes)) as List)
-          .cast<Map<String, dynamic>>();
-
-      final alimentosUnicos = <String>{};
-      for (final d in doacoes) {
-        for (final a in (d['alimentos_doados'] as List? ?? [])) {
-          final nome = a['alimento']?['nome']?.toString() ?? '';
-          if (nome.isNotEmpty) alimentosUnicos.add(nome);
-        }
-      }
-      if (alimentosUnicos.isEmpty) return;
-
-      final recResp = await api.post(
-        '/mineracao/recomendacoes',
-        {'alimentos': alimentosUnicos.toList()},
-      );
-      if (recResp.statusCode == 200) {
-        final data = jsonDecode(utf8.decode(recResp.bodyBytes));
-        final lista = data['recomendacoes'] ?? data ?? [];
-        final sugeridos = (lista as List)
-            .map((r) => (r['alimentoSugerido'] ?? r).toString())
-            .where((s) => !alimentosUnicos.contains(s))
-            .toSet()
-            .toList();
-        if (mounted) setState(() => _recomendacoes = sugeridos);
-      }
-    } catch (_) {}
   }
 
   Future<void> _fetchEstadosCidades() async {
@@ -238,18 +200,8 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
     );
   }
 
-  bool _campanhaRecomendada(Campaign c) {
-    if (_recomendacoes.isEmpty) return false;
-    final rec = _recomendacoes.map((r) => r.toLowerCase()).toSet();
-    return c.tiposAlimento.any((a) => rec.contains(a.toLowerCase()));
-  }
-
   Widget _buildListaPaginada() {
-    // Recomendadas primeiro, depois o restante
-    final ordenadas = [
-      ..._campanhas.where(_campanhaRecomendada),
-      ..._campanhas.where((c) => !_campanhaRecomendada(c)),
-    ];
+    final ordenadas = List<Campaign>.from(_campanhas);
 
     final totalPaginas = (ordenadas.length / _porPagina).ceil().clamp(1, 9999);
     final inicio = (_paginaAtual - 1) * _porPagina;
@@ -259,42 +211,17 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
     return Column(
       children: [
         ...pagina.map((campanha) {
-          final recomendada = _campanhaRecomendada(campanha);
           return GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
                 '/detalhes-campanha',
                 arguments: campanha,
               ),
               child: Card(
-                shape: recomendada
-                    ? RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: const BorderSide(color: Color(0xFF027ba1), width: 1.5),
-                      )
-                    : null,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (recomendada)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            children: const [
-                              Icon(Icons.recommend, size: 14, color: Color(0xFF027ba1)),
-                              SizedBox(width: 4),
-                              Text(
-                                'Recomendado para você',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF027ba1),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

@@ -20,6 +20,7 @@ class DoarAlimentosPage extends StatefulWidget {
 
 class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
   final Map<String, int> _doacoes = {};
+  List<String> _recomendacoes = [];
 
   @override
   void initState() {
@@ -497,6 +498,55 @@ class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
               const Text('1. O responsável da campanha entrará em contato'),
               const Text('2. Será combinado local e horário para entrega'),
               const Text('3. Você receberá um comprovante da doação'),
+              if (_recomendacoes.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF027ba1).withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFF027ba1).withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Quem doou estes alimentos também doou:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: Color(0xFF027ba1),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: _recomendacoes
+                            .map(
+                              (alimento) => Chip(
+                                label: Text(
+                                  alimento,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                backgroundColor: const Color(0xFF027ba1),
+                                padding: EdgeInsets.zero,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
           actions: [
@@ -601,12 +651,33 @@ class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
       final resp = await api.post('/doacoes', payload);
       if (!mounted) return;
       if (resp.statusCode == 201 || resp.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Doação registrada com sucesso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        final alimentosDoados = alimentosDoacao
+            .map((a) => nomeParaId.entries
+                .firstWhere((e) => e.value == a['alimento_id'],
+                    orElse: () => const MapEntry('', ''))
+                .key)
+            .where((n) => n.isNotEmpty)
+            .toList();
+
+        List<String> sugeridos = [];
+        try {
+          final recResp = await api.post('/mineracao/recomendacoes', {
+            'alimentos': alimentosDoados,
+          });
+          if (recResp.statusCode == 200) {
+            final recData = jsonDecode(recResp.body);
+            final lista = recData['recomendacoes'] ?? recData ?? [];
+            final doados = alimentosDoados.map((a) => a.toLowerCase()).toSet();
+            sugeridos = (lista as List)
+                .map((r) => (r['alimentoSugerido'] ?? r).toString())
+                .where((s) => !doados.contains(s.toLowerCase()))
+                .toList();
+          }
+        } catch (_) {}
+
+        if (mounted) {
+          setState(() => _recomendacoes = sugeridos);
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

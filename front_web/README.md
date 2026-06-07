@@ -10,8 +10,8 @@ Aplicação React (TypeScript) que conecta doadores de alimentos com campanhas s
 
 ## 📋 Índice
 
-- Sobre o Projeto
 - Telas
+- Sobre o Projeto
 - Funcionalidades
 - Tecnologias
 - Instalação

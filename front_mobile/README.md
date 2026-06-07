@@ -10,8 +10,8 @@ Aplicação Flutter (Android) que conecta doadores de alimentos com campanhas so
 
 ## 📋 Índice
 
-- Sobre o Projeto
 - Telas
+- Sobre o Projeto
 - Funcionalidades
 - Tecnologias
 - Instalação
@@ -64,6 +64,10 @@ Aplicação Flutter (Android) que conecta doadores de alimentos com campanhas so
 
 <table>
   <tr>
+    <td align="center">
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telapainel-minhasdocampanhas.jpeg" alt="Tela Painel Minhas Campanhas"  width="250"><br/>
+      <sub>Tela de Doação</sub>
+    </td>
     <td align="center">
       <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telapainel-minhasdocampanhas.jpeg" alt="Tela Painel Minhas Campanhas"  width="250"><br/>
       <sub>Tela Painel Minhas Campanhas</sub>
