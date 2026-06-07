@@ -32,12 +32,50 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
   List<Map<String, dynamic>> _estadosCidades = [];
   bool _usingFallbackEstados = false;
 
+  // Recomendações por mineração
+  List<String> _recomendacoes = [];
+
   @override
   void initState() {
     super.initState();
     AnalyticsService().trackPageView('Descobrir');
     _fetchEstadosCidades();
     _fetchCampanhas();
+    _fetchRecomendacoes();
+  }
+
+  Future<void> _fetchRecomendacoes() async {
+    final api = ApiService(baseUrl: ApiConfig.baseUrl);
+    try {
+      final resp = await api.get('/doacoes/minhas');
+      if (resp.statusCode != 200) return;
+      final doacoes = (jsonDecode(utf8.decode(resp.bodyBytes)) as List)
+          .cast<Map<String, dynamic>>();
+
+      final alimentosUnicos = <String>{};
+      for (final d in doacoes) {
+        for (final a in (d['alimentos_doados'] as List? ?? [])) {
+          final nome = a['alimento']?['nome']?.toString() ?? '';
+          if (nome.isNotEmpty) alimentosUnicos.add(nome);
+        }
+      }
+      if (alimentosUnicos.isEmpty) return;
+
+      final recResp = await api.post(
+        '/mineracao/recomendacoes',
+        {'alimentos': alimentosUnicos.toList()},
+      );
+      if (recResp.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(recResp.bodyBytes));
+        final lista = data['recomendacoes'] ?? data ?? [];
+        final sugeridos = (lista as List)
+            .map((r) => (r['alimentoSugerido'] ?? r).toString())
+            .where((s) => !alimentosUnicos.contains(s))
+            .toSet()
+            .toList();
+        if (mounted) setState(() => _recomendacoes = sugeridos);
+      }
+    } catch (_) {}
   }
 
   Future<void> _fetchEstadosCidades() async {
@@ -202,96 +240,140 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
     );
   }
 
+  bool _campanhaRecomendada(Campaign c) {
+    if (_recomendacoes.isEmpty) return false;
+    final rec = _recomendacoes.map((r) => r.toLowerCase()).toSet();
+    return c.tiposAlimento.any((a) => rec.contains(a.toLowerCase()));
+  }
+
   Widget _buildListaPaginada() {
-    final totalPaginas = (_campanhas.length / _porPagina).ceil().clamp(1, 9999);
+    // Recomendadas primeiro, depois o restante
+    final ordenadas = [
+      ..._campanhas.where(_campanhaRecomendada),
+      ..._campanhas.where((c) => !_campanhaRecomendada(c)),
+    ];
+
+    final totalPaginas = (ordenadas.length / _porPagina).ceil().clamp(1, 9999);
     final inicio = (_paginaAtual - 1) * _porPagina;
-    final fim = (inicio + _porPagina).clamp(0, _campanhas.length);
-    final pagina = _campanhas.sublist(inicio, fim);
+    final fim = (inicio + _porPagina).clamp(0, ordenadas.length);
+    final pagina = ordenadas.sublist(inicio, fim);
 
     return Column(
       children: [
-        ...pagina.map((campanha) => GestureDetector(
+        ...pagina.map((campanha) {
+          final recomendada = _campanhaRecomendada(campanha);
+          return GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
                 '/detalhes-campanha',
                 arguments: campanha,
               ),
               child: Card(
+                shape: recomendada
+                    ? RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: const BorderSide(color: Color(0xFF027ba1), width: 1.5),
+                      )
+                    : null,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Row(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          imagemCampanhaAsset(campanha.id),
-                          width: 80,
-                          height: 60,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            width: 80,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.grey.withAlpha(30),
-                            ),
-                            child: const Icon(
-                              Icons.campaign,
-                              size: 32,
-                              color: Colors.green,
-                            ),
+                      if (recomendada)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: const [
+                              Icon(Icons.recommend, size: 14, color: Color(0xFF027ba1)),
+                              SizedBox(width: 4),
+                              Text(
+                                'Recomendado para você',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF027ba1),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              campanha.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF191929),
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Alimentos • ${campanha.tiposAlimento.take(3).join(' • ')}',
-                              style: const TextStyle(
-                                color: Color(0xFF8d8d8d),
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.trending_up,
-                                  size: 12,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              imagemCampanhaAsset(campanha.id),
+                              width: 80,
+                              height: 60,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                width: 80,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.grey.withAlpha(30),
+                                ),
+                                child: const Icon(
+                                  Icons.campaign,
+                                  size: 32,
                                   color: Colors.green,
                                 ),
-                                const SizedBox(width: 4),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  '${campanha.percentualArrecadado.toStringAsFixed(1)}% arrecadado',
+                                  campanha.title,
                                   style: const TextStyle(
-                                    color: Colors.green,
-                                    fontSize: 11,
                                     fontWeight: FontWeight.w500,
+                                    color: Color(0xFF191929),
                                   ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Alimentos • ${campanha.tiposAlimento.take(3).join(' • ')}',
+                                  style: const TextStyle(
+                                    color: Color(0xFF8d8d8d),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.trending_up,
+                                      size: 12,
+                                      color: Colors.green,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${campanha.percentualArrecadado.toStringAsFixed(1)}% arrecadado',
+                                      style: const TextStyle(
+                                        color: Colors.green,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ),
-            )),
+          );
+        }),
 
         // Controles de paginação
         if (totalPaginas > 1)
