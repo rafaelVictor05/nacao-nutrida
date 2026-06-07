@@ -157,7 +157,7 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
               _loadingEstados
                   ? const Center(child: CircularProgressIndicator())
                   : DropdownButtonFormField<String>(
-                      value: _selectedEstado,
+                      initialValue: _selectedEstado,
                       items: _estados
                           .map((sg) => DropdownMenuItem<String>(
                                 value: sg,
@@ -187,7 +187,7 @@ class _CadastroUsuarioFormState extends State<CadastroUsuarioForm> {
               _loadingCidades
                   ? const Center(child: CircularProgressIndicator())
                   : DropdownButtonFormField<String>(
-                      value: _selectedCidade,
+                      initialValue: _selectedCidade,
                       items: _cidades
                           .map((c) => DropdownMenuItem<String>(
                                 value: c,

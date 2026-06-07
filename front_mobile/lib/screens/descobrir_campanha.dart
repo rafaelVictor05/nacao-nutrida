@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../components/header.dart';
 import '../components/header_login.dart';
 import '../components/footer.dart';
+import '../models/auth_manager.dart';
 import '../services/analytics_service.dart';
 import '../services/api_service.dart';
 import '../config/api.dart';
 import '../models/campaign.dart';
+import '../utils/campanha_imagem.dart';
 import 'dart:convert';
 
 class DescobrirCampanhaPage extends StatefulWidget {
@@ -18,6 +22,8 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
   bool _loadingApi = false;
   String? _error;
   List<Campaign> _campanhas = [];
+  int _paginaAtual = 1;
+  static const int _porPagina = 20;
 
   // Campos da barra de pesquisa
   String? _estadoSelecionado;
@@ -120,6 +126,7 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
 
         setState(() {
           _campanhas = filtradas;
+          _paginaAtual = 1;
         });
       } else {
         setState(() {
@@ -195,6 +202,155 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
     );
   }
 
+  Widget _buildListaPaginada() {
+    final totalPaginas = (_campanhas.length / _porPagina).ceil().clamp(1, 9999);
+    final inicio = (_paginaAtual - 1) * _porPagina;
+    final fim = (inicio + _porPagina).clamp(0, _campanhas.length);
+    final pagina = _campanhas.sublist(inicio, fim);
+
+    return Column(
+      children: [
+        ...pagina.map((campanha) => GestureDetector(
+              onTap: () => Navigator.of(context).pushNamed(
+                '/detalhes-campanha',
+                arguments: campanha,
+              ),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          imagemCampanhaAsset(campanha.id),
+                          width: 80,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            width: 80,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.grey.withAlpha(30),
+                            ),
+                            child: const Icon(
+                              Icons.campaign,
+                              size: 32,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              campanha.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF191929),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Alimentos • ${campanha.tiposAlimento.take(3).join(' • ')}',
+                              style: const TextStyle(
+                                color: Color(0xFF8d8d8d),
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.trending_up,
+                                  size: 12,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${campanha.percentualArrecadado.toStringAsFixed(1)}% arrecadado',
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )),
+
+        // Controles de paginação
+        if (totalPaginas > 1)
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: _paginaAtual > 1
+                      ? () => setState(() => _paginaAtual--)
+                      : null,
+                  icon: const Icon(Icons.chevron_left),
+                  style: IconButton.styleFrom(
+                    backgroundColor: _paginaAtual > 1
+                        ? const Color(0xFF027ba1)
+                        : Colors.grey.withAlpha(50),
+                    foregroundColor: _paginaAtual > 1
+                        ? Colors.white
+                        : Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  'Página $_paginaAtual de $totalPaginas',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Color(0xFF191929),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                IconButton(
+                  onPressed: _paginaAtual < totalPaginas
+                      ? () => setState(() => _paginaAtual++)
+                      : null,
+                  icon: const Icon(Icons.chevron_right),
+                  style: IconButton.styleFrom(
+                    backgroundColor: _paginaAtual < totalPaginas
+                        ? const Color(0xFF027ba1)
+                        : Colors.grey.withAlpha(50),
+                    foregroundColor: _paginaAtual < totalPaginas
+                        ? Colors.white
+                        : Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
   void _limparFiltros() {
     setState(() {
       _estadoSelecionado = null;
@@ -211,32 +367,23 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header com botão voltar
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 70,
-                  child: Container(
-                    color: Colors.white,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Color(0xFF027ba1),
-                      ),
-                      onPressed: () {
-                        AnalyticsService().trackButtonClick(
-                          'Voltar',
-                          'Descobrir',
-                        );
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ),
-                const Expanded(child: HeaderLogin()),
-              ],
-            ),
+            if (Provider.of<AuthManager>(context).isLoggedIn)
+              HeaderLogin(
+                showBack: true,
+                onBack: () {
+                  AnalyticsService().trackButtonClick('Voltar', 'Descobrir');
+                  Navigator.pop(context);
+                },
+              )
+            else
+              Header(
+                rightText: '',
+                rightButtonText: '',
+                onBack: () {
+                  AnalyticsService().trackButtonClick('Voltar', 'Descobrir');
+                  Navigator.pop(context);
+                },
+              ),
 
             // Barra de pesquisa
             Container(
@@ -411,7 +558,7 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
               ),
             ),
 
-            // Lista de campanhas
+            // Lista de campanhas com paginação
             Padding(
               padding: const EdgeInsets.all(24),
               child: _loadingApi
@@ -420,94 +567,7 @@ class _DescobrirCampanhaPage extends State<DescobrirCampanhaPage> {
                   ? Center(child: Text(_error!))
                   : _campanhas.isEmpty
                   ? const Center(child: Text('Nenhuma campanha encontrada'))
-                  : Column(
-                      children: _campanhas
-                          .map(
-                            (campanha) => GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pushNamed(
-                                  '/detalhes-campanha',
-                                  arguments: campanha,
-                                );
-                              },
-                              child: Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Flexible(
-                                        flex: 0,
-                                        child: Container(
-                                          width: 80,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            color: Colors.grey.withAlpha(30),
-                                          ),
-                                          child: const Icon(
-                                            Icons.campaign,
-                                            size: 32,
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              campanha.title,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xFF191929),
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              'Alimentos • ${campanha.tiposAlimento.take(3).join(' • ')}',
-                                              style: const TextStyle(
-                                                color: Color(0xFF8d8d8d),
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.trending_up,
-                                                  size: 12,
-                                                  color: Colors.green,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  '${campanha.percentualArrecadado.toStringAsFixed(1)}% arrecadado',
-                                                  style: const TextStyle(
-                                                    color: Colors.green,
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                  : _buildListaPaginada(),
             ),
             const Footer(),
           ],

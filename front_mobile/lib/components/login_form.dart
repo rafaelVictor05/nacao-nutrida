@@ -37,11 +37,11 @@ class _LoginFormState extends State<LoginForm> {
     setState(() => _loading = true);
     final api = ApiService(baseUrl: ApiConfig.baseUrl);
     try {
-      final ok = await api.login(email, password);
+      final userId = await api.loginGetUserId(email, password);
       if (!mounted) return;
-      if (ok) {
+      if (userId != null) {
         final authManager = Provider.of<AuthManager>(context, listen: false);
-        authManager.login(name: email.split('@').first, email: email);
+        authManager.login(name: email.split('@').first, email: email, userId: userId);
         Navigator.of(context).pushNamed('/descobrir-campanha');
       } else {
         ScaffoldMessenger.of(

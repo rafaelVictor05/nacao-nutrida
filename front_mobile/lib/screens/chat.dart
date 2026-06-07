@@ -253,6 +253,7 @@ class _ChatScreenState extends State<ChatScreen> {
         await _selectConversation(conv);
       }
     } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Erro ao iniciar conversa.'),
@@ -297,6 +298,7 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       });
     } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Erro ao excluir conversa.'),
@@ -310,7 +312,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _selected == null ? const HeaderLogin(showBack: true) : null,
       body: _selected == null
           ? _buildConversationList()
           : _buildChatWindow(),
@@ -325,6 +326,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const HeaderLogin(showBack: true),
         const Padding(
           padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
           child: Text(

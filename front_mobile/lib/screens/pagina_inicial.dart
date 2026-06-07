@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../components/header.dart';
+import '../components/header_login.dart';
 import '../components/footer.dart';
 import '../components/pagina_inicial.dart';
+import '../models/auth_manager.dart';
 import '../services/analytics_service.dart';
 
 class PaginaInicial extends StatefulWidget {
@@ -25,19 +28,24 @@ class _PaginaInicialState extends State<PaginaInicial> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = Provider.of<AuthManager>(context).isLoggedIn;
+
     return Scaffold(
       backgroundColor: const Color(0xFFf6f6f6),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Header(
-              rightText: '',
-              rightButtonText: 'Login',
-              onRightButtonPressed: () {
-                AnalyticsService().trackButtonClick('Login', 'Header');
-                Navigator.of(context).pushNamed('/login');
-              },
-            ),
+            if (isLoggedIn)
+              const HeaderLogin()
+            else
+              Header(
+                rightText: '',
+                rightButtonText: 'Login',
+                onRightButtonPressed: () {
+                  AnalyticsService().trackButtonClick('Login', 'Header');
+                  Navigator.of(context).pushNamed('/login');
+                },
+              ),
             const SizedBox.shrink(),
             Padding(padding: const EdgeInsets.all(24), child: LeftSidebar()),
             const Footer(),

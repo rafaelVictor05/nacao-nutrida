@@ -42,6 +42,33 @@ class ApiService {
         .timeout(const Duration(seconds: 10));
   }
 
+  Future<http.Response> patch(String path, {Map<String, dynamic>? body}) async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl$path');
+    final encoded = body != null ? jsonEncode(body) : null;
+    return http
+        .patch(uri, headers: headers, body: encoded)
+        .timeout(const Duration(seconds: 10));
+  }
+
+  /// Tenta login e retorna userId em sucesso, null em falha de credenciais.
+  Future<String?> loginGetUserId(String email, String password) async {
+    final resp = await post('/usuarioLogin', {
+      'user_email': email,
+      'user_password': password,
+    });
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body);
+      final token = data['token'];
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt_token', token);
+      final user = data['user'] ?? data;
+      final id = user['id']?.toString() ?? user['_id']?.toString();
+      return id ?? 'unknown';
+    }
+    return null;
+  }
+
   // Exemplo: login que salva token
   Future<bool> login(String email, String password) async {
     // Ajuste: rota e campos conforme schemas do servidor

@@ -36,17 +36,12 @@ class _CadastrarCampanhaPageState extends State<CadastrarCampanhaPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFf6f6f6),
       
-      // **ALTERAÇÃO AQUI:** Usando HeaderLogin no appBar
-      // showBack: true é usado para incluir o botão de voltar, comum em formulários de cadastro.
-      appBar: const HeaderLogin(showBack: true), 
-
       body: !_carregou
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  // O componente HeaderAuth (ou a lógica de cabeçalho antiga) foi removido daqui
-                  // const SizedBox.shrink(),
+                  const HeaderLogin(showBack: true),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: CadastroCampanhaForm(),

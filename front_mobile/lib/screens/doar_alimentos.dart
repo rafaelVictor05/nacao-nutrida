@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../components/header.dart';
+import '../components/header_login.dart';
 import '../components/footer.dart';
 import '../models/campaign.dart';
 import '../models/auth_manager.dart';
@@ -40,20 +41,15 @@ class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Header(
-              rightText: authManager.isLoggedIn
-                  ? 'Olá, ${authManager.userName?.split(' ').first}!'
-                  : 'Já tem conta?',
-              rightButtonText: authManager.isLoggedIn ? 'Sair' : 'Entrar',
-              onRightButtonPressed: () {
-                if (authManager.isLoggedIn) {
-                  authManager.logout();
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.of(context).pushNamed('/login');
-                }
-              },
-            ),
+            if (authManager.isLoggedIn)
+              const HeaderLogin()
+            else
+              Header(
+                rightText: 'Já tem conta?',
+                rightButtonText: 'Entrar',
+                onRightButtonPressed: () =>
+                    Navigator.of(context).pushNamed('/login'),
+              ),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(

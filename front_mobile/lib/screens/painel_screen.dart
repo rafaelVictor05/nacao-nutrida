@@ -62,15 +62,16 @@ class _PainelScreenState extends State<PainelScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
 
-      // **ALTERAÇÃO AQUI: Passando showBack: true para o HeaderLogin**
-      appBar: const HeaderLogin(showBack: true),
-
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
+                  const HeaderLogin(showBack: true),
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
                   const SizedBox(height: 16),
                   const Text(
                     'Painel',
@@ -112,6 +113,9 @@ class _PainelScreenState extends State<PainelScreen> {
                             .toList(),
                       ),
                     ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
