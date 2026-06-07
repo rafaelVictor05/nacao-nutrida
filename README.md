@@ -1,16 +1,18 @@
-# DSM-PI6-2026-1
-PI 6º semestre
+# Nação Nutrida: DSM PI 6º Semestre
 
-## Estrutura do Projeto
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Este repositório contém o projeto "Nação Nutrida", desenvolvido para o 6º semestre do curso de DSM (Desenvolvimento de Software Multiplataforma). Abaixo está a estrutura das pastas principais e suas finalidades:
+Projeto Integrador do 6º semestre do curso de **Desenvolvimento de Software Multiplataforma (DSM)**: FATEC.
 
-- **front_mobile/**: Aplicação móvel desenvolvida em Flutter para a plataforma Android e iOS. Contém o código fonte da app móvel, configurações de build, assets e testes.
-  - `lib/`: Código fonte principal da aplicação Flutter.
+## Estrutura do Repositório
+
+Este repositório contém o projeto **Nação Nutrida**, uma plataforma digital multiplataforma de doação de alimentos que conecta doadores com campanhas sociais de arrecadação.
+
+- **front_mobile/**: Aplicação Android desenvolvida em Flutter. Contém o código-fonte da app mobile, configurações de build, assets e testes.
+  - `lib/`: Código-fonte principal da aplicação Flutter.
   - `android/`: Configurações específicas para Android.
-  - `ios/`: Configurações específicas para iOS.
   - `assets/`: Recursos estáticos como imagens e fontes.
-  - `pubspec.yaml`: Arquivo de configuração do projeto Flutter, incluindo dependências.
+  - `pubspec.yaml`: Dependências do projeto Flutter.
   - `analysis_options.yaml`: Configurações de análise de código.
 
 - **front_web/**: Aplicação web desenvolvida em React com TypeScript. Inclui frontend e configurações do cliente.
@@ -39,30 +41,31 @@ Este repositório contém o projeto "Nação Nutrida", desenvolvido para o 6º s
 - Ausência de métricas sobre uso da plataforma
 - Processo manual e desorganizado de doações
 
-**Versão Atual**: 0.0.3 (em desenvolvimento para DSM 6º semestre 2026)
+**Versão Atual**: 1.0.0 (DSM 6º semestre 2026)
 
 ### Principais Funcionalidades
 
 #### Para Usuários Doadores:
-- Descoberta de Campanhas - Lista interativa com informações detalhadas
-- Visualização de Progresso - Acompanhamento de metas em tempo real
-- Processo de Doação - Interface simplificada para seleção de alimentos
-- Histórico Transparente - Visualização de contribuições realizadas
-- Chat - Comunicação entre doadores e organizações
-- Gerenciamento de Perfil - Dados pessoais e histórico de doações
+- **Descoberta de Campanhas**: listagem com filtro por estado e cidade
+- **Recomendações Inteligentes**: campanhas sugeridas com base no histórico de doações (mineração de dados)
+- **Visualização de Progresso**: acompanhamento de metas em tempo real
+- **Processo de Doação**: interface simplificada para seleção de alimentos e quantidades
+- **Histórico de Doações**: visualização de contribuições realizadas
+- **Chat**: comunicação entre doadores e organizações
+- **Painel do Usuário**: resumo de atividades e recomendações personalizadas
 
 #### Para Organizações (Admin):
-- Cadastro de Campanhas - Criação com metas específicas
-- Gestão de Estoque - Controle de tipos e quantidades de alimentos
-- Monitoramento - Acompanhamento de doações recebidas
-- Painel de Análise - Relatórios e performance das campanhas
-- Gerenciamento de Admins - Controle de acesso e permissões
+- **Cadastro de Campanhas**: criação com metas por tipo de alimento
+- **Gestão de Estoque**: controle de tipos e quantidades de alimentos
+- **Monitoramento**: acompanhamento de doações recebidas em tempo real
+- **Encerramento Automático**: campanha encerrada ao atingir 100% da meta
+- **Gerenciamento de Admins**: controle de acesso e permissões
 
-#### Sistema de Analytics (Diferencial):
-- Páginas Mais Acessadas - Ranking de popularidade
-- Tempo de Renderização - Medição de performance em MS
-- Botões Mais Clicados - Análise de interações do usuário
-- Páginas Pesadas - Detecção automática de gargalos
+#### Sistema de Recomendações por Mineração de Dados (Diferencial):
+- **Regras de Associação**: algoritmo Apriori identifica padrões de doação
+- **Recomendação de Alimentos**: sugere alimentos com base no histórico do doador
+- **Recomendação de Campanhas**: destaca campanhas que necessitam dos alimentos sugeridos
+- **Integração Multiplataforma**: disponível tanto na web quanto no mobile
 
 ## Principais Pontos da Modelagem do Projeto
 
@@ -101,11 +104,12 @@ server/
 
 #### Funcionalidades por Módulo:
 - **Usuário**: Registro, login (JWT), atualização, busca de admins
-- **Campanha**: CRUD completo, busca por localização, filtros
+- **Campanha**: CRUD completo, busca por localização, filtros, encerramento automático ao atingir meta
 - **Doação**: Registro de doações, histórico do usuário
 - **Alimento**: Listagem de alimentos cadastrados
 - **Chat**: Conversas e mensagens entre usuários
 - **Localidade**: Integração com IBGE API para busca de cidades
+- **Mineração**: Geração de regras de associação (Apriori) e recomendações de alimentos/campanhas
 
 ### Front-End
 
@@ -123,7 +127,7 @@ Localização: `front_web/src/`
 Localização: `front_mobile/lib/`
 
 **Telas Principais**:
-- Pagina Inicial, Login, Cadastro, Descobrir, Detalhes Campanha, Cadastrar Campanha, Doar Alimentos, Painel, Analytics, Perfil, Chat
+- Página Inicial, Login, Cadastro de Usuário, Descobrir, Descobrir Campanhas (com recomendações), Detalhes da Campanha, Cadastrar Campanha, Doar Alimentos, Painel do Usuário, Chat
 
 **Modelos**: User, Campaign, Donation, etc.
 
@@ -183,3 +187,11 @@ model Campanha {
 ```
 
 Para mais detalhes, consulte o arquivo `back_end/server/prisma/schema.prisma`.
+
+## 📄 Licença
+
+Este projeto está sob licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+**Desenvolvido por:**
+
+Frederico Pessoa Barbosa · Jorge Luiz Patrocínio dos Santos · Yago Raphael Bughi Mouro · Rafael Victor Redoval de Sousa
