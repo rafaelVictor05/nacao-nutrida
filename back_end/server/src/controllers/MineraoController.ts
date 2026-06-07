@@ -96,7 +96,7 @@ export default class MineraoController {
     res: Response
   ): Promise<Response> {
     try {
-      const { alimentos } = req.body;
+      const { alimentos, campanhaId } = req.body;
 
       if (!alimentos || !Array.isArray(alimentos) || alimentos.length === 0) {
         return res.status(400).json({
@@ -105,7 +105,10 @@ export default class MineraoController {
       }
 
       const recomendacoes =
-        await this.mineraoDbService.obterRecomendacoesPorAlimentos(alimentos);
+        await this.mineraoDbService.obterRecomendacoesPorAlimentos(
+          alimentos,
+          campanhaId
+        );
 
       if (recomendacoes.length === 0) {
         return res.status(200).json({
