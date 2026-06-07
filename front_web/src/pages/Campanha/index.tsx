@@ -38,7 +38,7 @@ export const Campanha = () => {
   }, [_id, url, refreshData]);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [recomendacoes, setRecomendacoes] = useState<string[]>([]);
+  const [recomendacoes, setRecomendacoes] = useState<any[]>([]);
 
   const handleCloseModal = () => {
     if (!user.user || !user.user.id || user.user.id === "") {
@@ -49,20 +49,46 @@ export const Campanha = () => {
     setModalVisible(!modalVisible);
   };
 
-  const fetchRecomendacoesParaDoacao = async (alimentos: string[]) => {
-    try {
-      const res = await api.post("/mineracao/recomendacoes", {
+  const fetchRecomendacoesParaDoacao = async (
+  alimentos: string[]
+) => {
+
+  try {
+
+    const res = await api.post(
+      "/mineracao/recomendacoes",
+      {
         alimentos,
         campanhaId: _id,
-      });
-      const data = res.data.recomendacoes || res.data || [];
-      setRecomendacoes(data.map((r: any) => r.alimentoSugerido ?? r));
-    } catch (error: any) {
-      console.error("Erro ao buscar recomendações:", error);
-      toast.error("Não foi possível carregar recomendações no momento.");
-      setRecomendacoes([]);
-    }
-  };
+      }
+    );
+
+    const data =
+      res.data.recomendacoes ||
+      res.data ||
+      [];
+
+    console.log(
+      "Recomendações recebidas:",
+      data
+    );
+
+    setRecomendacoes(data);
+
+  } catch (error: any) {
+
+    console.error(
+      "Erro ao buscar recomendações:",
+      error
+    );
+
+    toast.error(
+      "Não foi possível carregar recomendações no momento."
+    );
+
+    setRecomendacoes([]);
+  }
+};
 
   const replaceSpace = (str: string) => {
     return str.replace(/\s+/g, "");
@@ -217,7 +243,6 @@ export const Campanha = () => {
 
   return (
     campanha &&
-    campanha &&
     campanha.alimentos && (
       <>
         <Navbar />
@@ -283,19 +308,68 @@ export const Campanha = () => {
               </div>
 
               {recomendacoes.length > 0 && (
-                <div style={{margin: "0.8rem 0", padding: "0.9rem 1.2rem", background: "#e3f2fd", borderRadius: 10, border: "1.5px solid #1976d2"}}>
-                  <p style={{color: "#1976d2", fontWeight: 700, fontSize: "1.1rem", marginBottom: 8}}>
-                    Quem doou estes alimentos também doou:
-                  </p>
-                  <div style={{display: "flex", flexWrap: "wrap", gap: 8}}>
-                    {recomendacoes.map((alimento, i) => (
-                      <span key={i} style={{background: "#1976d2", color: "#fff", borderRadius: 16, padding: "3px 12px", fontWeight: 600, fontSize: "1rem"}}>
-                        {alimento}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+
+  <div
+    style={{
+      margin: "0.8rem 0",
+      padding: "1rem 1.2rem",
+      background: "#e3f2fd",
+      borderRadius: 10,
+      border: "1.5px solid #1976d2",
+    }}
+  >
+
+    <p
+      style={{
+        color: "#1976d2",
+        fontWeight: 700,
+        fontSize: "1.1rem",
+        marginBottom: 10,
+      }}
+    >
+      Quem doou estes alimentos também doou:
+    </p>
+
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 10,
+      }}
+    >
+
+      {recomendacoes.map((rec, i) => (
+
+        <div
+          key={i}
+          style={{
+            background: "#1976d2",
+            color: "#fff",
+            borderRadius: 16,
+            padding: "8px 14px",
+            fontWeight: 600,
+            minWidth: 120,
+          }}
+        >
+
+          <div
+            style={{
+              fontSize: "1rem",
+              marginBottom: 4,
+            }}
+          >
+            {rec.alimentoSugerido}
+          </div>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  </div>
+
+)}
               <div className="comentario column">
                 <label>Adicione um comentário (opcional)</label>
                 <textarea className="input-form" name="descricao"></textarea>

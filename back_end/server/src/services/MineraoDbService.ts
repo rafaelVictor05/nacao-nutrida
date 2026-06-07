@@ -4,70 +4,73 @@ import path from "path";
 import csv from "csv-parser";
 
 export default class MineraoDbService {
+
   private prisma: PrismaClient;
+
+  private itensFrequentes:
+    { item: string; support: number }[] = [];
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
   /**
-   * Obter a versão mais recente das regras
+   * =========================
+   * CARREGAR ITENS FREQUENTES
+   * =========================
    */
-  async obterVersaoMaisRecente(): Promise<number> {
-    const ultimaRegra = await this.prisma.mineracao_regra.findFirst({
-      orderBy: { versao: "desc" },
-      select: { versao: true },
-    });
 
-    return ultimaRegra?.versao || 0;
-  }
+  private async carregarItensFrequentesCSV():
+    Promise<void> {
 
-  /**
-   * Carregar regras do arquivo CSV e salvar no banco com versão
-   */
-  async carregarRegrasDoCSV(caminhoCSV: string): Promise<number> {
-    if (!fs.existsSync(caminhoCSV)) {
-      throw new Error(`Arquivo não encontrado: ${caminhoCSV}`);
+    if (this.itensFrequentes.length > 0) {
+      return;
     }
 
-    const versao = (await this.obterVersaoMaisRecente()) + 1;
-    const regras: any[] = [];
+    const caminhoCSV = path.join(
+      __dirname,
+      "../../../..",
+      "mineracao",
+      "itens_frequentes.csv"
+    );
+
+    if (!fs.existsSync(caminhoCSV)) {
+      return;
+    }
 
     return new Promise((resolve, reject) => {
+
+      const itens:
+        { item: string; support: number }[] = [];
+
       fs.createReadStream(caminhoCSV)
+
         .pipe(csv())
+
         .on("data", (row: any) => {
-          regras.push({
-            versao,
-            antecedents: row.antecedents || "",
-            consequents: row.consequents || "",
-            support: parseFloat(row.support) || 0,
-            confidence: parseFloat(row.confidence) || 0,
-            lift: parseFloat(row.lift) || 0,
-            ativo: true,
-          });
-        })
-        .on("end", async () => {
-          try {
-            // CORRIGIDO: Passando where e data no mesmo objeto
-            await this.prisma.mineracao_regra.updateMany({
-              where: { versao: versao - 1 },
-              data: { ativo: false },
-            });
 
-            // Inserir novas regras
-            await this.prisma.mineracao_regra.createMany({
-              data: regras,
-            });
+          if (row.item) {
 
-            console.log(
-              `✓ ${regras.length} regras da versão ${versao} inseridas no banco`
-            );
-            resolve(versao);
-          } catch (error) {
-            reject(error);
+            itens.push({
+
+              item:
+                row.item,
+
+              support:
+                parseFloat(row.support) || 0,
+            });
           }
         })
+
+        .on("end", () => {
+
+          this.itensFrequentes = itens.sort(
+            (a, b) => b.support - a.support
+          );
+
+          resolve();
+        })
+
         .on("error", (error: any) => {
           reject(error);
         });
@@ -75,164 +78,614 @@ export default class MineraoDbService {
   }
 
   /**
-   * Obter todas as regras ativas
+   * =========================
+   * NORMALIZAR TEXTO
+   * =========================
    */
-  async obterRegrasAtivas(): Promise<any[]> {
-    return this.prisma.mineracao_regra.findMany({
-      where: { ativo: true },
-      orderBy: { lift: "desc" },
+
+  private normalizarTexto(text: string): string {
+
+    return text
+
+      .normalize("NFD")
+
+      .replace(/[\u0300-\u036f]/g, "")
+
+      .toLowerCase();
+  }
+
+  /**
+   * =========================
+   * VERSÃO MAIS RECENTE
+   * =========================
+   */
+
+  async obterVersaoMaisRecente():
+    Promise<number> {
+
+    const ultimaRegra =
+      await this.prisma.mineracao_regra.findFirst({
+
+        orderBy: {
+          versao: "desc"
+        },
+
+        select: {
+          versao: true
+        },
+      });
+
+    return ultimaRegra?.versao || 0;
+  }
+
+  /**
+   * =========================
+   * IMPORTAR CSV
+   * =========================
+   */
+
+  async carregarRegrasDoCSV(
+    caminhoCSV: string
+  ): Promise<number> {
+
+    if (!fs.existsSync(caminhoCSV)) {
+
+      throw new Error(
+        `Arquivo não encontrado: ${caminhoCSV}`
+      );
+    }
+
+    const versao =
+      (await this.obterVersaoMaisRecente()) + 1;
+
+    const regras: any[] = [];
+
+    return new Promise((resolve, reject) => {
+
+      fs.createReadStream(caminhoCSV)
+
+        .pipe(csv())
+
+        .on("data", (row: any) => {
+
+          regras.push({
+
+            versao,
+
+            antecedents:
+              row.antecedents || "",
+
+            consequents:
+              row.consequents || "",
+
+            support:
+              parseFloat(row.support) || 0,
+
+            confidence:
+              parseFloat(row.confidence) || 0,
+
+            lift:
+              parseFloat(row.lift) || 0,
+
+            ativo:
+              true,
+          });
+        })
+
+        .on("end", async () => {
+
+          try {
+
+            // Desativar regras antigas
+
+            await this.prisma.mineracao_regra.updateMany({
+
+              where: {
+                versao: versao - 1
+              },
+
+              data: {
+                ativo: false
+              },
+            });
+
+            // Inserir novas regras
+
+            await this.prisma.mineracao_regra.createMany({
+
+              data: regras,
+            });
+
+            console.log(
+              `✓ ${regras.length} regras `
+              + `da versão ${versao} `
+              + `inseridas no banco`
+            );
+
+            resolve(versao);
+
+          } catch (error) {
+
+            reject(error);
+          }
+        })
+
+        .on("error", (error: any) => {
+          reject(error);
+        });
     });
   }
 
   /**
-   * Obter recomendações por alimento (do banco)
+   * =========================
+   * REGRAS ATIVAS
+   * =========================
    */
+
+  async obterRegrasAtivas():
+    Promise<any[]> {
+
+    return this.prisma.mineracao_regra.findMany({
+
+      where: {
+        ativo: true
+      },
+
+      orderBy: {
+        lift: "desc"
+      },
+    });
+  }
+
+  /**
+   * =========================
+   * RECOMENDAÇÃO POR ALIMENTO
+   * =========================
+   */
+
   async obterRecomendacoesPorAlimento(
     alimento: string
   ): Promise<any[]> {
-    const regras = await this.prisma.mineracao_regra.findMany({
-      where: {
-        ativo: true,
-        antecedents: {
-          contains: alimento,
-          mode: "insensitive",
-        },
-      },
-      orderBy: [{ confidence: "desc" }, { lift: "desc" }],
-    });
+    
 
-    return regras.map((r) => ({
-      alimentoOrigem: r.antecedents,
-      alimentoSugerido: r.consequents,
-      confianca: r.confidence,
-      lift: r.lift,
-      forca: this.classificarForca(r.confidence, r.lift),
-    }));
+    const regrasAtivas =
+      await this.prisma.mineracao_regra.findMany({
+
+        where: {
+          ativo: true
+        },
+
+        orderBy: [
+          { confidence: "desc" },
+          { lift: "desc" }
+        ],
+      });
+
+    const termoNormalizado =
+      this.normalizarTexto(alimento);
+
+    const regras = regrasAtivas.filter((regra) =>
+
+      this.normalizarTexto(
+        regra.antecedents
+      ).includes(termoNormalizado)
+    );
+
+    /**
+     * =========================
+     * EXISTE REGRA
+     * =========================
+     */
+
+    if (regras.length > 0) {
+
+      const recomendacoes = regras.map((r) => ({
+
+        alimentoOrigem:
+          r.antecedents,
+
+        alimentoSugerido:
+          r.consequents,
+
+        confianca:
+          r.confidence,
+
+        lift:
+          r.lift,
+
+        forca:
+          this.classificarForca(
+            r.confidence,
+            r.lift
+          ),
+      }));
+
+      // Remove duplicados
+
+      const unicas = Array.from(
+
+        new Map(
+
+          recomendacoes.map((r) => [
+
+            r.alimentoSugerido,
+            r
+
+          ])
+        ).values()
+      );
+
+      return unicas;
+    }
+
+    /**
+     * =========================
+     * FALLBACK:
+     * ITENS FREQUENTES
+     * =========================
+     */
+
+    await this.carregarItensFrequentesCSV();
+
+    return this.itensFrequentes
+
+      .filter(
+
+        (item) =>
+
+          this.normalizarTexto(item.item) !==
+          this.normalizarTexto(alimento)
+      )
+
+      .slice(0, 5)
+
+      .map((item) => ({
+
+        alimentoOrigem:
+          "Item frequente",
+
+        alimentoSugerido:
+          item.item,
+
+        confianca:
+          0,
+
+        lift:
+          0,
+
+        forca:
+          "Frequente",
+      }));
   }
 
-  async obterItensMetaDaCampanha(campanhaId: string): Promise<string[]> {
-    const metaItens = await this.prisma.alimento_campanha.findMany({
-      where: { campanha_id: campanhaId },
-      select: { alimento_id: true },
-    });
+  /**
+   * =========================
+   * META DA CAMPANHA
+   * =========================
+   */
+
+  async obterItensMetaDaCampanha(
+    campanhaId: string
+  ): Promise<string[]> {
+
+    const metaItens =
+      await this.prisma.alimento_campanha.findMany({
+
+        where: {
+          campanha_id: campanhaId
+        },
+
+        select: {
+          alimento_id: true
+        },
+      });
 
     if (metaItens.length === 0) {
       return [];
     }
 
-    const alimentoIds = metaItens.map((item) => item.alimento_id);
+    const alimentoIds =
+      metaItens.map(
+        (item) => item.alimento_id
+      );
 
-    const alimentos = await this.prisma.alimento.findMany({
-      where: { id: { in: alimentoIds } },
-      select: { nm_alimento: true },
-    });
+    const alimentos =
+      await this.prisma.alimento.findMany({
 
-    return alimentos.map((item) => item.nm_alimento);
+        where: {
+          id: {
+            in: alimentoIds
+          }
+        },
+
+        select: {
+          nm_alimento: true
+        },
+      });
+
+    return alimentos.map(
+      (item) => item.nm_alimento
+    );
   }
 
   /**
-   * Obter recomendações por múltiplos alimentos
+   * =========================
+   * ITENS FREQUENTES DISPONÍVEIS
+   * =========================
    */
+
+  private obterItensFrequentesDisponiveis(
+    alimentosConsultadosSet: Set<string>,
+    limite = 5
+  ): any[] {
+
+    return this.itensFrequentes
+
+      .filter(
+
+        (item) =>
+
+          !alimentosConsultadosSet.has(
+            item.item.toLowerCase()
+          )
+      )
+
+      .slice(0, limite)
+
+      .map((item) => ({
+
+        alimentoOrigem:
+          "Item frequente",
+
+        alimentoSugerido:
+          item.item,
+
+        confianca:
+          0,
+
+        lift:
+          0,
+
+        forca:
+          "Frequente",
+      }));
+  }
+
+  /**
+   * =========================
+   * RECOMENDAÇÃO POR LISTA
+   * =========================
+   */
+
   async obterRecomendacoesPorAlimentos(
     alimentos: string[],
     campanhaId?: string
   ): Promise<any[]> {
+
     const recomendacoes: any[] = [];
 
-    const itensPermitidos = campanhaId
-      ? await this.obterItensMetaDaCampanha(campanhaId)
-      : [];
+    await this.carregarItensFrequentesCSV();
 
-    const permitidosSet = new Set(
-      itensPermitidos.map((item) => item.toLowerCase())
-    );
-    const alimentosConsultadosSet = new Set(
-      alimentos.map((item) => item.toLowerCase())
-    );
+    const alimentosConsultadosSet =
+      new Set(
+
+        alimentos.map(
+            (item) =>
+              this.normalizarTexto(item)
+        )
+      );
 
     for (const alimento of alimentos) {
-      const recs = await this.obterRecomendacoesPorAlimento(alimento);
-      recomendacoes.push(...recs);
+
+      const recs =
+        await this.obterRecomendacoesPorAlimento(
+          alimento
+        );
+
+      const recsFiltradas = recs.filter((rec) => {
+
+        const sugestao =
+          this.normalizarTexto(
+            String(rec.alimentoSugerido || "")
+        );
+
+        return !alimentosConsultadosSet.has(
+          sugestao
+        );
+      });
+
+      if (recsFiltradas.length > 0) {
+
+        recomendacoes.push(
+          ...recsFiltradas
+        );
+
+        continue;
+      }
+
+      // Fallback
+
+      recomendacoes.push(
+
+        ...this.obterItensFrequentesDisponiveis(
+
+          alimentosConsultadosSet,
+
+          5
+        )
+      );
     }
 
-    // Filtrar itens de recomendação para a meta da campanha
-    const recomendacoesFiltradas = recomendacoes.filter((rec) => {
-      const sugestao = String(rec.alimentoSugerido || "").toLowerCase();
-
-      if (alimentosConsultadosSet.has(sugestao)) {
-        return false;
-      }
-
-      if (campanhaId && permitidosSet.size > 0) {
-        return permitidosSet.has(sugestao);
-      }
-
-      return true;
-    });
+    // Remove duplicados
 
     const recsUnicas = Array.from(
-      new Map(recomendacoesFiltradas.map((r) => [r.alimentoSugerido, r])).values()
+
+      new Map(
+
+        recomendacoes.map((r) => [
+
+          r.alimentoSugerido,
+          r
+
+        ])
+      ).values()
     );
 
-    return recsUnicas.sort((a, b) => b.confianca - a.confianca);
+    if (recsUnicas.length === 0) {
+      return this.obterItensFrequentesDisponiveis(
+        alimentosConsultadosSet,
+        5
+      );
+    }
+
+    return recsUnicas.sort(
+
+      (a, b) => b.confianca - a.confianca
+    );
   }
 
   /**
-   * Obter estatísticas das regras ativas
+   * =========================
+   * ESTATÍSTICAS
+   * =========================
    */
-  async obterEstatisticas(): Promise<any> {
-    const regras = await this.obterRegrasAtivas();
+
+  async obterEstatisticas():
+    Promise<any> {
+
+    const regras =
+      await this.obterRegrasAtivas();
 
     if (regras.length === 0) {
+
       return {
+
         totalRegras: 0,
+
         confiancaMedia: 0,
+
         liftMedio: 0,
+
         supportMedio: 0,
+
         versaoAtual: 0,
       };
     }
 
-    const versaoAtual = Math.max(...regras.map((r) => r.versao));
+    const versaoAtual =
+      Math.max(
+        ...regras.map((r) => r.versao)
+      );
 
     return {
-      totalRegras: regras.length,
-      confiancaMedia: parseFloat(
-        (
-          regras.reduce((sum, r) => sum + r.confidence, 0) / regras.length
-        ).toFixed(4)
-      ),
-      liftMedio: parseFloat(
-        (regras.reduce((sum, r) => sum + r.lift, 0) / regras.length).toFixed(4)
-      ),
-      supportMedio: parseFloat(
-        (regras.reduce((sum, r) => sum + r.support, 0) / regras.length).toFixed(
-          4
-        )
-      ),
+
+      totalRegras:
+        regras.length,
+
+      confiancaMedia:
+        parseFloat(
+
+          (
+            regras.reduce(
+
+              (sum, r) =>
+                sum + r.confidence,
+
+              0
+            ) / regras.length
+
+          ).toFixed(4)
+        ),
+
+      liftMedio:
+        parseFloat(
+
+          (
+            regras.reduce(
+
+              (sum, r) =>
+                sum + r.lift,
+
+              0
+            ) / regras.length
+
+          ).toFixed(4)
+        ),
+
+      supportMedio:
+        parseFloat(
+
+          (
+            regras.reduce(
+
+              (sum, r) =>
+                sum + r.support,
+
+              0
+            ) / regras.length
+
+          ).toFixed(4)
+        ),
+
       versaoAtual,
     };
   }
 
   /**
-   * Classificar força da regra
+   * =========================
+   * CLASSIFICAR FORÇA
+   * =========================
    */
-  private classificarForca(confidence: number, lift: number): string {
-    if (confidence >= 0.8 && lift >= 2) return "Muito Forte";
-    if (confidence >= 0.6 && lift >= 1.5) return "Forte";
-    if (confidence >= 0.4 && lift >= 1.2) return "Moderada";
+
+  private classificarForca(
+    confidence: number,
+    lift: number
+  ): string {
+
+    if (
+      confidence >= 0.8 &&
+      lift >= 2
+    ) {
+      return "Muito Forte";
+    }
+
+    if (
+      confidence >= 0.6 &&
+      lift >= 1.5
+    ) {
+      return "Forte";
+    }
+
+    if (
+      confidence >= 0.4 &&
+      lift >= 1.2
+    ) {
+      return "Moderada";
+    }
+
     return "Fraca";
   }
 
   /**
-   * Obter histórico de versões
+   * =========================
+   * HISTÓRICO DE VERSÕES
+   * =========================
    */
-  async obterHistoricoVersoes(): Promise<any[]> {
-    const versoes = await this.prisma.mineracao_regra.groupBy({
-      by: ["versao"],
-      _count: true,
-      orderBy: { versao: "desc" },
-    });
+
+  async obterHistoricoVersoes():
+    Promise<any[]> {
+
+    const versoes =
+      await this.prisma.mineracao_regra.groupBy({
+
+        by: ["versao"],
+
+        _count: true,
+
+        orderBy: {
+          versao: "desc"
+        },
+      });
 
     return versoes;
   }
