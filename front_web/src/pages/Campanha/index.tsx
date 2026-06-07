@@ -46,16 +46,22 @@ export const Campanha = () => {
       navigate("/login");
       return;
     }
-    if (!modalVisible && campanha) {
-      const alimentosDaCampanha = campanha.alimentos.map((a: any) => a.nm_alimento);
-      api.post("/mineracao/recomendacoes", { alimentos: alimentosDaCampanha })
-        .then(res => {
-          const data = res.data.recomendacoes || res.data || [];
-          setRecomendacoes(data.map((r: any) => r.alimentoSugerido ?? r));
-        })
-        .catch(() => setRecomendacoes([]));
-    }
     setModalVisible(!modalVisible);
+  };
+
+  const fetchRecomendacoesParaDoacao = async (alimentos: string[]) => {
+    try {
+      const res = await api.post("/mineracao/recomendacoes", {
+        alimentos,
+        campanhaId: _id,
+      });
+      const data = res.data.recomendacoes || res.data || [];
+      setRecomendacoes(data.map((r: any) => r.alimentoSugerido ?? r));
+    } catch (error: any) {
+      console.error("Erro ao buscar recomendações:", error);
+      toast.error("Não foi possível carregar recomendações no momento.");
+      setRecomendacoes([]);
+    }
   };
 
   const replaceSpace = (str: string) => {
@@ -166,6 +172,17 @@ export const Campanha = () => {
         } else {
           console.log("Sucesso ao salvar dados no banco ", responseData);
           setModalVisible(false);
+          const donatedFoodNames = alimentos_doacao
+            .map((item: any) =>
+              campanha?.alimentos?.find(
+                (a: any) => a.alimento_id === item.alimento_id
+              )?.nm_alimento
+            )
+            .filter(Boolean) as string[];
+
+          if (donatedFoodNames.length > 0) {
+            await fetchRecomendacoesParaDoacao(donatedFoodNames);
+          }
           setRefreshData((prev) => !prev);
           event.target.reset();
 
