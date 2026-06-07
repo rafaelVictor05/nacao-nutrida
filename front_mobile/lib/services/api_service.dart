@@ -63,8 +63,9 @@ class ApiService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('jwt_token', token);
       final user = data['user'] ?? data;
-      final id = user['id']?.toString() ?? user['_id']?.toString();
-      return id ?? 'unknown';
+      final id = user['id']?.toString() ?? user['_id']?.toString() ?? 'unknown';
+      await prefs.setString('userId', id);
+      return id;
     }
     return null;
   }
