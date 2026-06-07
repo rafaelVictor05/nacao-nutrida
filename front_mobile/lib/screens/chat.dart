@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../components/header_login.dart';
 import '../config/api.dart';
+import '../models/auth_manager.dart';
 
 // ---------------------------------------------------------------------------
 // Modelos
@@ -93,8 +95,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    final userIdFromPrefs = prefs.getString('userId') ?? '';
+    // AuthManager pode estar vazio ao reiniciar o app; usa prefs como fonte confiável.
+    String resolvedId = userIdFromPrefs;
+    if (resolvedId.isEmpty && mounted) {
+      resolvedId =
+          Provider.of<AuthManager>(context, listen: false).userId ?? '';
+    }
     setState(() {
-      _userId = prefs.getString('userId') ?? '';
+      _userId = resolvedId;
       _adminId = prefs.getString('adminId') ?? 'admin';
     });
     if (_userId.isNotEmpty) {
@@ -125,7 +134,7 @@ class _ChatScreenState extends State<ChatScreen> {
           .get(uri, headers: headers)
           .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) {
-        final List data = jsonDecode(res.body);
+        final List data = jsonDecode(utf8.decode(res.bodyBytes));
         final convs = data.map((j) => Conversation.fromJson(j)).toList();
         setState(() => _conversations = convs);
         for (final conv in convs) {
@@ -189,7 +198,7 @@ class _ChatScreenState extends State<ChatScreen> {
           .get(uri, headers: headers)
           .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) {
-        final List data = jsonDecode(res.body);
+        final List data = jsonDecode(utf8.decode(res.bodyBytes));
         setState(() {
           _messages = data.map((j) => ChatMessage.fromJson(j)).toList();
         });
@@ -208,16 +217,19 @@ class _ChatScreenState extends State<ChatScreen> {
       final res = await http
           .post(
             uri,
-            headers: headers,
-            body: jsonEncode({
+            headers: {
+              ...headers,
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: utf8.encode(jsonEncode({
               'conversationId': _selected!.id,
               'senderId': _userId,
               'text': text.trim(),
-            }),
+            })),
           )
           .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200 || res.statusCode == 201) {
-        final msg = ChatMessage.fromJson(jsonDecode(res.body));
+        final msg = ChatMessage.fromJson(jsonDecode(utf8.decode(res.bodyBytes)));
         setState(() => _messages.add(msg));
       }
     } catch (_) {}
@@ -247,12 +259,13 @@ class _ChatScreenState extends State<ChatScreen> {
           )
           .timeout(const Duration(seconds: 10));
       if (res.statusCode == 200 || res.statusCode == 201) {
-        final conv = Conversation.fromJson(jsonDecode(res.body));
+        final conv = Conversation.fromJson(jsonDecode(utf8.decode(res.bodyBytes)));
         setState(() => _conversations.add(conv));
         await _fetchOtherUserName(conv);
         await _selectConversation(conv);
       }
     } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Erro ao iniciar conversa.'),
@@ -297,6 +310,7 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       });
     } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Erro ao excluir conversa.'),
@@ -310,7 +324,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _selected == null ? const HeaderLogin(showBack: true) : null,
       body: _selected == null
           ? _buildConversationList()
           : _buildChatWindow(),
@@ -325,6 +338,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const HeaderLogin(showBack: true),
         const Padding(
           padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
           child: Text(
@@ -417,11 +431,25 @@ class _ChatScreenState extends State<ChatScreen> {
                                 const TextStyle(color: Colors.black54),
                           )
                         : null,
-                    trailing: time.isNotEmpty
-                        ? Text(time,
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.black45))
-                        : null,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (time.isNotEmpty)
+                          Text(time,
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.black45)),
+                        const SizedBox(width: 4),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline,
+                              color: Colors.red, size: 20),
+                          tooltip: 'Excluir conversa',
+                          onPressed: () => _deleteConversation(conv),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

@@ -5,17 +5,20 @@ class AuthManager extends ChangeNotifier {
   String? _userName;
   String? _userEmail;
   String? _userPhone;
+  String? _userId;
 
   bool get isLoggedIn => _isLoggedIn;
   String? get userName => _userName;
   String? get userEmail => _userEmail;
   String? get userPhone => _userPhone;
+  String? get userId => _userId;
 
-  void login({String? name, String? email, String? phone}) {
+  void login({String? name, String? email, String? phone, String? userId}) {
     _isLoggedIn = true;
     _userName = name;
     _userEmail = email;
     _userPhone = phone;
+    _userId = userId;
     notifyListeners();
   }
 
@@ -24,6 +27,7 @@ class AuthManager extends ChangeNotifier {
     _userName = null;
     _userEmail = null;
     _userPhone = null;
+    _userId = null;
     notifyListeners();
   }
 

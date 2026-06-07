@@ -10,7 +10,6 @@ import 'screens/cadastro_usuario.dart';
 import 'screens/cadastrar_campanha.dart';
 import 'screens/detalhes_campanha.dart';
 import 'screens/doar_alimentos.dart';
-import 'screens/analytics_dashboard.dart';
 import 'screens/dados_perfil.dart';
 import 'screens/editar_perfil.dart';
 import 'screens/painel_screen.dart';
@@ -37,8 +36,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/cadastro-usuario': (context) => const CadastroUsuarioPage(),
         '/cadastrar-campanha': (context) => const CadastrarCampanhaPage(),
-        '/analytics': (context) => const AnalyticsDashboard(),
-        '/descobrir-campanha': (context) => const DescobrirCampanhaPage(),
+'/descobrir-campanha': (context) => const DescobrirCampanhaPage(),
         '/perfil': (context) => DadosPerfil(),
         '/editar-perfil': (context) => const EditarPerfilPage(),
         '/painel': (context) => const PainelScreen(),

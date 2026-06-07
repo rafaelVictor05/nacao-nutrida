@@ -6,6 +6,7 @@ class Header extends StatelessWidget {
   final String rightButtonText;
   final VoidCallback? onRightButtonPressed;
   final bool showLogo;
+  final VoidCallback? onBack;
 
   const Header({
     super.key,
@@ -14,66 +15,68 @@ class Header extends StatelessWidget {
     required this.rightButtonText,
     this.onRightButtonPressed,
     this.showLogo = true,
+    this.onBack,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final topPadding = MediaQuery.of(context).padding.top;
+
+    return ColoredBox(
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (showLogo)
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed('/');
-              },
-              child: _buildLogoWithText(leftText),
+          SizedBox(height: topPadding),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (onBack != null)
+                  IconButton(
+                    onPressed: onBack,
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Color(0xFF027ba1),
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                if (showLogo)
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed('/'),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: _buildLogoWithText(leftText),
+                    ),
+                  ),
+                const Spacer(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _HeaderLink(
+                      label: 'Descobrir',
+                      onTap: () =>
+                          Navigator.of(context).pushNamed('/descobrir-campanha'),
+                    ),
+                    const SizedBox(width: 12),
+                    _HeaderLink(
+                      label: 'Criar',
+                      onTap: () =>
+                          Navigator.of(context).pushNamed('/login'),
+                    ),
+                    const SizedBox(width: 12),
+                    _HeaderLink(
+                      label: 'Login',
+                      onTap: onRightButtonPressed ??
+                          () => Navigator.of(context).pushNamed('/login'),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          Row(
-            children: [
-              const SizedBox(width: 8),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/descobrir');
-                },
-                child: const Text(
-                  'Campanhas',
-                  style: TextStyle(
-                    color: Color(0xFF027ba1),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/login');
-                },
-                child: const Text(
-                  'Criar',
-                  style: TextStyle(
-                    color: Color(0xFF027ba1),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              TextButton(
-                onPressed: () {
-                  // Ajustes: pode ser ajustado para a rota correta
-                  Navigator.of(context).pushNamed('/login');
-                },
-                child: const Text(
-                  'Login',
-                  style: TextStyle(
-                    color: Color(0xFF027ba1),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -81,7 +84,9 @@ class Header extends StatelessWidget {
   }
 
   Widget _buildLogoWithText(String? text) {
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Image.asset('assets/logo.png', width: 32, height: 32),
         if (text != null) ...[
@@ -95,6 +100,24 @@ class Header extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _HeaderLink extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _HeaderLink({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 14, color: Colors.black87),
+      ),
     );
   }
 }

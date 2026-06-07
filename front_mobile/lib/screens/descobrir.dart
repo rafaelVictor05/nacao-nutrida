@@ -1,11 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../components/header.dart';
+import '../components/header_login.dart';
 import '../components/footer.dart';
-import '../services/analytics_service.dart';
+import '../models/auth_manager.dart';
 import '../services/api_service.dart';
 import '../config/api.dart';
 import '../models/campaign.dart';
-import 'dart:convert';
 
 class DescobrirPage extends StatefulWidget {
   const DescobrirPage({super.key});
@@ -29,7 +31,6 @@ class _DescobrirPageState extends State<DescobrirPage> {
   @override
   void initState() {
     super.initState();
-    AnalyticsService().trackPageView('Descobrir');
     _fetchEstadosCidades();
     _fetchCampanhas();
   }
@@ -211,40 +212,20 @@ class _DescobrirPageState extends State<DescobrirPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header com botão voltar
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 70,
-                  child: Container(
-                    color: Colors.white,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Color(0xFF027BA1),
-                      ),
-                      onPressed: () {
-                        AnalyticsService().trackButtonClick(
-                          'Voltar',
-                          'Descobrir',
-                        );
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Header(
-                    rightText: 'Não tem conta?',
-                    rightButtonText: 'Cadastre-se',
-                    onRightButtonPressed: () {
-                      Navigator.of(context).pushNamed('/cadastro-usuario');
-                    },
-                  ),
-                ),
-              ],
-            ),
+            if (Provider.of<AuthManager>(context).isLoggedIn)
+              HeaderLogin(
+                onBack: () => Navigator.pop(context),
+                showBack: true,
+              )
+            else
+              Header(
+                rightText: 'Não tem conta?',
+                rightButtonText: 'Cadastre-se',
+                onRightButtonPressed: () {
+                  Navigator.of(context).pushNamed('/cadastro-usuario');
+                },
+                onBack: () => Navigator.pop(context),
+              ),
 
             // Barra de pesquisa
             Container(

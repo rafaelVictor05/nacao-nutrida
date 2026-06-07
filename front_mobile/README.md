@@ -1,140 +1,93 @@
-# 🍽️ Nação Nutrida
+# 🍽️ Nação Nutrida — Mobile
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.32.8-02569B?logo=flutter)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.5.0-0175C2?logo=dart)](https://dart.dev)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![CI/CD](https://github.com/Fredericobarbosa/nacao_nutrida_flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/Fredericobarbosa/nacao_nutrida_flutter/actions)
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.8+-0175C2?logo=dart)](https://dart.dev)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](../LICENSE)
 
-> **Plataforma digital para doação de alimentos com sistema avançado de Analytics e Testes A/B**
+> **Aplicativo mobile para doação de alimentos com recomendações inteligentes baseadas em mineração de dados**
 
-Uma aplicação Flutter Web que conecta doadores de alimentos com campanhas sociais, incluindo sistema completo de análise de métricas de uso em tempo real.
+Aplicação Flutter (Android) que conecta doadores de alimentos com campanhas sociais, integrando um sistema de recomendações que sugere campanhas relevantes com base no histórico de doações do usuário.
 
 ## 📋 Índice
 
 - [Sobre o Projeto](#-sobre-o-projeto)
 - [Funcionalidades](#-funcionalidades)
-- [Sistema de Analytics](#-sistema-de-analytics)
 - [Tecnologias](#-tecnologias)
 - [Instalação](#-instalação)
 - [Uso](#-uso)
-- [Pipeline CI/CD](#-pipeline-cicd)
-- [Contribuição](#-contribuição)
-- [Demonstração](#-demonstração)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
 
 ## 🎯 Sobre o Projeto
 
-O **Nação Nutrida** é uma plataforma web desenvolvida para facilitar doações de alimentos, conectando pessoas que desejam doar com organizações que precisam de ajuda. O projeto inclui um sistema completo de **Testes A/B** e **Analytics** para análise de comportamento dos usuários.
+O **Nação Nutrida Mobile** é o front-end Android da plataforma Nação Nutrida. Ele consome a API REST do back-end para exibir campanhas ativas, permitir doações de alimentos e oferecer recomendações personalizadas baseadas no histórico de doações de cada usuário, geradas pelo módulo de mineração de dados (regras de associação).
 
-### Problema Resolvido
-- **Dificuldade** para encontrar campanhas de doação
-- **Falta de transparência** no processo de arrecadação  
-- **Ausência de métricas** sobre uso da plataforma
-- **Processo manual** e desorganizado de doações
+### Problemas Resolvidos
+- Dificuldade para encontrar campanhas de doação próximas
+- Falta de transparência no processo de arrecadação
+- Processo manual e desorganizado de doações
+- Descoberta passiva de campanhas sem personalização
 
-### Solução Oferecida
-✅ **Interface intuitiva** para descobrir campanhas  
-✅ **Processo de doação** simplificado e transparente  
-✅ **Analytics avançado** com 4 tipos de métricas principais  
-✅ **Dashboard em tempo real** para análise de uso  
-✅ **Sistema de persistência** de dados local  
+### Diferenciais
+- Recomendações personalizadas via mineração de dados (regras de associação)
+- Campanhas recomendadas destacadas visualmente na listagem
+- Interface responsiva e acessível para dispositivos Android
+- Autenticação integrada com o back-end
 
 ## 🚀 Funcionalidades
 
-### 👥 Para Usuários Doadores
-- **Descoberta de Campanhas** - Lista interativa com informações detalhadas
-- **Visualização de Progresso** - Acompanhamento das metas em tempo real  
-- **Processo de Doação** - Interface simples para seleção de alimentos
-- **Histórico Transparente** - Visualização das contribuições realizadas
+### Para Usuários Doadores
+- **Descoberta de Campanhas** — listagem com filtro por estado e cidade
+- **Recomendações Inteligentes** — campanhas destacadas com base no histórico de doações
+- **Detalhes da Campanha** — progresso de arrecadação por tipo de alimento
+- **Processo de Doação** — seleção de alimentos e quantidades
+- **Histórico de Doações** — visualização das contribuições realizadas
+- **Painel do Usuário** — resumo de atividades e recomendações de alimentos
 
-### 🏢 Para Organizações
-- **Cadastro de Campanhas** - Criação com metas específicas
-- **Gestão de Estoque** - Controle de tipos e quantidades de alimentos
-- **Monitoramento** - Acompanhamento de doações recebidas
-- **Relatórios** - Análise de performance das campanhas
+### Para Organizações
+- **Cadastro de Campanhas** — criação com metas por tipo de alimento
+- **Monitoramento** — acompanhamento de doações recebidas em tempo real
+- **Encerramento Automático** — campanha encerrada ao atingir 100% da meta
 
-### 📊 Sistema de Analytics (Diferencial)
-- **Coleta Automática** - Métricas coletadas sem interferir na UX
-- **Dashboard Visual** - Interface para análise dos dados
-- **Persistência Local** - Dados mantidos entre sessões
-- **API Ready** - Preparado para integração com backend
-
-## 📊 Sistema de Analytics
-
-Implementação completa de **Testes A/B** conforme requisitos acadêmicos:
-
-### 1️⃣ Páginas Mais Acessadas
-```dart
-// Tracking automático de page views
-AnalyticsService().trackPageView('Página Inicial');
-```
-- Registro de todas as visitas às páginas
-- Ranking de popularidade
-- Análise de fluxo de navegação
-
-### 2️⃣ Tempo de Renderização  
-```dart
-// Medição precisa de performance
-AnalyticsService().trackPageLoadTime('Login', loadTimeMs);
-```
-- Tempo de carregamento em millisegundos
-- Identificação de gargalos de performance
-- Detecção automática de páginas lentas (>1000ms)
-
-### 3️⃣ Botões Mais Clicados
-```dart
-// Tracking de interações do usuário
-AnalyticsService().trackButtonClick('Login', 'Header');
-```
-- Análise de popularidade de funcionalidades
-- Contexto detalhado de cada interação
-- Otimização de UX baseada em dados reais
-
-### 4️⃣ Páginas Pesadas
-```dart
-// Detecção automática de problemas de performance
-AnalyticsService().trackHeavyPageMetrics('Dashboard', 
-  loadTimeMs: 1200, 
-  heavyOperations: ['Data loading', 'Chart rendering']
-);
-```
-- Identificação de páginas com performance ruim
-- Análise de operações custosas
-- Sugestões automáticas de otimização
+### Sistema de Recomendações
+O módulo de recomendações consome o endpoint `/mineracao/recomendacoes` do back-end:
+1. Busca o histórico de doações do usuário (`/doacoes/minhas`)
+2. Extrai os alimentos únicos já doados
+3. Envia para a API de mineração e recebe sugestões de alimentos complementares
+4. Destaca campanhas que necessitam dos alimentos sugeridos com badge "Recomendado para você"
 
 ## 🛠️ Tecnologias
 
-### Frontend
-- **[Flutter 3.32.8](https://flutter.dev)** - Framework principal
-- **[Dart](https://dart.dev)** - Linguagem de programação
-- **[Material Design 3](https://m3.material.io)** - Sistema de design
+### Framework
+- **[Flutter](https://flutter.dev)** — framework principal (Android)
+- **[Dart 3.8+](https://dart.dev)** — linguagem de programação
 
-### Estado e Dados  
-- **[Provider 6.1.5](https://pub.dev/packages/provider)** - Gerenciamento de estado
-- **[SharedPreferences 2.3.2](https://pub.dev/packages/shared_preferences)** - Persistência local
-- **[HTTP 1.1.0](https://pub.dev/packages/http)** - Cliente HTTP para APIs
-
-### Ferramentas de Desenvolvimento
-- **[GitHub Actions](https://github.com/features/actions)** - Pipeline CI/CD
-- **[Flutter Analyze](https://docs.flutter.dev/testing/debugging)** - Análise estática
-- **[GitHub Pages](https://pages.github.com)** - Hospedagem automática
+### Dependências Principais
+| Pacote | Versão | Uso |
+|---|---|---|
+| [provider](https://pub.dev/packages/provider) | ^6.1.5 | Gerenciamento de estado (AuthManager) |
+| [http](https://pub.dev/packages/http) | ^1.1.0 | Requisições à API REST |
+| [shared_preferences](https://pub.dev/packages/shared_preferences) | ^2.3.2 | Persistência local do token |
+| [file_picker](https://pub.dev/packages/file_picker) | ^10.3.3 | Seleção de imagens para campanhas |
+| [font_awesome_flutter](https://pub.dev/packages/font_awesome_flutter) | ^10.6.0 | Ícones |
+| [mask_text_input_formatter](https://pub.dev/packages/mask_text_input_formatter) | ^2.4.0 | Máscaras de input (CPF, telefone) |
 
 ## 📱 Instalação
 
 ### Pré-requisitos
 ```bash
-# Flutter SDK (versão 3.32.8 ou superior)
+# Flutter SDK (3.x ou superior)
 flutter --version
 
-# Git para clonagem do repositório  
-git --version
+# Android SDK (via Android Studio ou sdkmanager)
+# Dispositivo físico Android ou emulador configurado
 ```
 
 ### Passo a Passo
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/Fredericobarbosa/nacao_nutrida_flutter.git
-   cd nacao_nutrida_flutter
+   git clone https://github.com/Nacao-Nutrida/DSM-PI6-2026-1.git
+   cd DSM-PI6-2026-1/front_mobile
    ```
 
 2. **Instale as dependências**
@@ -142,182 +95,82 @@ git --version
    flutter pub get
    ```
 
-3. **Execute em modo de desenvolvimento**
+3. **Configure a URL do back-end**
+
+   Edite [lib/config/api.dart](lib/config/api.dart) e ajuste `baseUrl` para o endereço do servidor:
+   ```dart
+   static const String baseUrl = 'http://SEU_IP:3000';
+   ```
+
+4. **Execute em modo de desenvolvimento**
    ```bash
-   # Para web (recomendado)
-   flutter run -d chrome
-   
-   # Para dispositivo conectado
+   # Com dispositivo/emulador conectado
    flutter run
    ```
 
-4. **Build para produção**
+5. **Build para produção (APK)**
    ```bash
-   # Web
-   flutter build web
-   
-   # Android
-   flutter build apk
+   flutter build apk --release
    ```
 
 ## 💻 Uso
 
-### Desenvolvimento Local
 ```bash
 # Executar em modo debug
-flutter run -d chrome --debug
+flutter run --debug
+
+# Análise estática de código
+flutter analyze
 
 # Executar testes
 flutter test
 
-# Análise de código
-flutter analyze
-
-# Verificar dispositivos disponíveis
+# Listar dispositivos disponíveis
 flutter devices
 ```
-
-### Acessar Analytics
-1. **Execute a aplicação** em modo web
-2. **Navegue pelas páginas** para gerar métricas
-3. **Clique no botão azul flutuante** na página inicial  
-4. **Visualize as métricas** coletadas em tempo real
-
-### Testar Persistência
-1. **Use a aplicação** por alguns minutos
-2. **Feche completamente** o navegador
-3. **Reabra a aplicação** 
-4. **Verifique** que os dados permanecem no dashboard
-
-## 🔄 Pipeline CI/CD
-
-O projeto inclui pipeline completo automatizado:
-
-### Workflow GitHub Actions
-```yml
-# Executa em: Push para main, Pull Requests
-Jobs:
-  - 🧪 Análise de código (flutter analyze)
-  - 🧪 Testes unitários (flutter test)  
-  - 🏗️ Build para web (flutter build web)
-  - 🚀 Deploy automático (GitHub Pages)
-```
-
-### Monitoramento
-- **Status badges** no README
-- **Logs detalhados** de cada execução
-- **Deploy automático** em caso de sucesso
-- **Rollback** em caso de falha
-
-### Acessar Pipeline
-1. Vá para **GitHub Actions** tab
-2. Veja **histórico de execuções**
-3. **Logs detalhados** de cada step
-4. **Status** de build e deploy
-
-## 🎯 Demonstração
-
-### Demo Online
-🌐 **[Acesse a aplicação](https://fredericobarbosa.github.io/nacao_nutrida_flutter/)**
-
-### Funcionalidades para Testar
-- ✅ **Navegação** entre páginas (gera page views)
-- ✅ **Cliques** em botões (registra interações)
-- ✅ **Dashboard Analytics** (botão azul flutuante)
-- ✅ **Processo de doação** completo
-- ✅ **Persistência** de dados entre sessões
-
-### Métricas Esperadas
-Após usar por alguns minutos, você verá:
-- **Páginas mais visitadas** com contadores
-- **Tempos de renderização** em millisegundos
-- **Botões populares** com ranking de cliques  
-- **Alertas** para páginas com performance ruim
-
-## 🤝 Contribuição
-
-### Como Contribuir
-1. **Fork** do projeto
-2. **Crie uma branch** (`git checkout -b feature/nova-funcionalidade`)
-3. **Commit** suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. **Push** para branch (`git push origin feature/nova-funcionalidade`)
-5. **Abra um Pull Request**
-
-### Padrões de Código
-- Siga as **convenções Dart/Flutter**
-- Use **flutter analyze** antes de commits
-- Escreva **testes** para novas funcionalidades
-- **Documente** mudanças no README
 
 ## 📁 Estrutura do Projeto
 
 ```
 lib/
-├── main.dart                 # Entrada da aplicação
-├── models/                   # Modelos de dados
-│   ├── auth_manager.dart     # Autenticação
-│   ├── campaign.dart         # Campanha
-│   └── user.dart             # Usuário
-├── screens/                  # Telas da aplicação
-│   ├── pagina_inicial.dart   # Página inicial
-│   ├── descobrir.dart        # Lista campanhas
-│   ├── login.dart            # Autenticação
-│   ├── detalhes_campanha.dart # Detalhes
-│   ├── doar_alimentos.dart   # Doação
-│   └── analytics_dashboard.dart # Analytics
-├── components/               # Componentes reutilizáveis
-│   ├── header.dart           # Cabeçalho
-│   ├── footer.dart           # Rodapé  
-│   └── left_sidebar.dart     # Menu lateral
-└── services/                 # Serviços
-    └── analytics_service.dart # Sistema analytics
+├── main.dart                        # Entrada e roteamento da aplicação
+├── config/
+│   └── api.dart                     # URL base da API
+├── models/
+│   ├── auth_manager.dart            # Estado de autenticação (Provider)
+│   ├── campaign.dart                # Modelo de campanha
+│   └── user.dart                    # Modelo de usuário
+├── screens/
+│   ├── pagina_inicial.dart          # Página inicial
+│   ├── login.dart                   # Tela de login
+│   ├── cadastro_usuario.dart        # Cadastro de usuário
+│   ├── descobrir.dart               # Busca de campanhas por localização
+│   ├── descobrir_campanha.dart      # Listagem de campanhas (com recomendações)
+│   ├── detalhes_campanha.dart       # Detalhes e progresso de campanha
+│   ├── doar_alimentos.dart          # Fluxo de doação
+│   ├── cadastrar_campanha.dart      # Criação de campanha
+│   ├── cadastrar_pedido.dart        # Criação de pedido
+│   ├── painel_screen.dart           # Painel do usuário logado
+│   └── chat.dart                    # Chat
+├── components/                      # Widgets reutilizáveis
+│   ├── header.dart
+│   ├── header_auth.dart
+│   ├── header_login.dart
+│   ├── header_cadastro_usuario.dart
+│   ├── footer.dart
+│   ├── login_form.dart
+│   ├── cadastro_usuario_form.dart
+│   ├── cadastro_campanha.dart
+│   └── pagina_inicial.dart
+└── services/
+    └── api_service.dart             # Cliente HTTP com autenticação por token
 ```
 
-## 📊 Analytics em Números
+### Padrões
+- Siga as convenções Dart/Flutter
+- Execute `flutter analyze` antes de abrir PR
+- Use commits semânticos (`feat:`, `fix:`, `chore:`, `refactor:`)
 
-### Métricas Coletadas Automaticamente:
-- **Page Views** - Todas as visualizações de página
-- **Load Times** - Performance em millisegundos  
-- **Button Clicks** - Interações do usuário
-- **Heavy Pages** - Páginas com problemas de performance
-- **User Sessions** - Sessões individuais de uso
-- **Navigation Paths** - Fluxos de navegação
+**Desenvolvido por:**
 
-### Dashboard Inclui:
-- 📊 **Gráficos visuais** de todas as métricas
-- 🔄 **Atualização** em tempo real  
-- 💾 **Persistência** entre sessões
-- 🧹 **Limpeza** de dados opcional
-- 📤 **Simulação** de envio para API
-
-## 🏆 Diferenciais do Projeto
-
-### Técnicos
-✅ **Architecture** - Clean architecture com separação de responsabilidades  
-✅ **State Management** - Provider pattern implementado corretamente  
-✅ **Analytics Custom** - Sistema próprio, não biblioteca terceirizada  
-✅ **Persistence** - Dados mantidos localmente sem backend  
-✅ **CI/CD** - Pipeline profissional automatizado  
-
-### Funcionais  
-✅ **Real Problem** - Soluciona problema social real  
-✅ **Complete UX** - Fluxo completo de usuário implementado  
-✅ **Data Driven** - Decisões baseadas em métricas reais  
-✅ **Production Ready** - Hospedado e funcional online  
-✅ **Scalable** - Preparado para crescimento e backend real  
-
-## 📄 Licença
-
-Este projeto está sob licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-**Desenvolvido por:** 
-
-Frederico Barbosa
-
-Jorge Santos 
-
-Yago Mouro
-
----
-
-⭐ **Se este projeto foi útil, considere dar uma estrela no repositório!**
+Frederico Pessoa Barbosa · Jorge Luiz Patrocínio dos Santos · Yago Raphael Bughi Mouro · Rafael Victor Redoval de Sousa

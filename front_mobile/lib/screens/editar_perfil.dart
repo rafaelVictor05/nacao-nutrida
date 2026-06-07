@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/header_login.dart';
 import '../components/profile_avatar.dart';
@@ -100,6 +101,16 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId') ?? '';
+    if (userId.isEmpty) {
+      setState(() {
+        _error = 'Usuário não identificado. Faça login novamente.';
+        _loading = false;
+      });
+      return;
+    }
+
     final api = ApiService(baseUrl: ApiConfig.baseUrl);
     final payload = {
       'nm_usuario': _nomeCtrl.text,
@@ -109,14 +120,23 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
     };
 
     try {
-      final resp = await api.put('/usuario/perfil', body: payload);
+      final resp = await api.patch('/usuario/$userId', body: payload);
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        if (mounted) Navigator.of(context).pop(true);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Dados salvos com sucesso!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+          Navigator.of(context).pop(true);
+        }
       } else {
-        _error = 'Erro ao salvar alterações';
+        setState(() => _error = 'Erro ao salvar alterações (${resp.statusCode})');
       }
     } catch (_) {
-      _error = 'Falha ao conectar com o servidor';
+      setState(() => _error = 'Falha ao conectar com o servidor');
     } finally {
       setState(() => _loading = false);
     }
@@ -224,6 +244,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                                 Expanded(
                                   child: _editing
                                       ? DropdownButtonFormField<String>(
+                                          isExpanded: true,
                                           initialValue: _selectedEstado,
                                           items: _estadosCidades
                                               .map((e) {
@@ -259,6 +280,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                                 Expanded(
                                   child: _editing
                                       ? DropdownButtonFormField<String>(
+                                          isExpanded: true,
                                           initialValue: _selectedCidade,
                                           items: (() {
                                             List<dynamic> cidades = [];
@@ -294,6 +316,7 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                                                         value: c.toString(),
                                                         child: Text(
                                                           c.toString(),
+                                                          overflow: TextOverflow.ellipsis,
                                                         ),
                                                       ),
                                                 )
