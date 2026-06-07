@@ -1,26 +1,65 @@
-cd_usuario,nm_usuario,ch_cpf_usuario,ch_cnpj_usuario,dt_nascimento_usuario,nr_celular_usuario,sg_estado_usuario,nm_cidade_usuario,cd_foto_usuario,cd_senha_usuario,cd_email_usuario,fg_admin,qt_advertencias_usuario,fg_usuario_deletado
-1,Yago Silva,12345678901,,1990-05-15,11987654321,SP,São Paulo,1.png,hash123,yago@email.com,0,0,0
-2,Maria Santos,98765432109,,1985-12-10,21901234567,RJ,Rio de Janeiro,2.png,hash123,maria@example.com,0,0,0
-3,Pedro Oliveira,45678901234,,1978-08-20,31955556666,MG,Belo Horizonte,3.png,hash123,pedro@example.com,0,0,0
-4,Empresa ABC Ltda,,12345678901234,,11999998888,SP,São Paulo,4.png,hash123,empresa@example.com,0,0,0
-5,Comércio XYZ Ltda,,98765432109876,,21988887777,RJ,Rio de Janeiro,default.png,hash123,comercio@example.com,0,0,0
-6,Ana Paula Costa,12312312311,,1992-04-11,11970010001,SP,Campinas,default.png,hash123,anapaulacosta@example.com,0,0,0
-7,Lucas Ferreira,23423423422,,1994-09-22,11970010002,SP,Franca,default.png,hash123,lucasferreira@example.com,0,0,0
-8,Juliana Lima,34534534533,,1989-03-07,31970010003,MG,Uberlândia,default.png,hash123,julianalima@example.com,0,0,0
-9,Carlos Souza,45645645644,,1987-11-30,31970010004,MG,Juiz de Fora,default.png,hash123,carlossouza@example.com,0,0,0
-10,Fernanda Rocha,56756756755,,1991-01-15,21970010005,RJ,Niterói,default.png,hash123,fernandarocha@example.com,0,0,0
-11,Rafael Gomes,67867867866,,1988-06-18,41970010006,PR,Curitiba,default.png,hash123,rafaelgomes@example.com,0,0,0
-12,Patrícia Alves,78978978977,,1995-08-09,41970010007,PR,Londrina,default.png,hash123,patriciaalves@example.com,0,0,0
-13,Instituto Esperança,,11122233344455,,11970010008,SP,Ribeirão Preto,default.png,hash123,institutoesperanca@example.com,0,0,0
-14,Associação Viver Bem,,22233344455566,,31970010009,MG,Contagem,default.png,hash123,associacaoviverbem@example.com,0,0,0
-15,João Martins,89089089088,,1993-12-03,11970010010,SP,Santos,default.png,hash123,joaomartins@example.com,0,0,0
-16,Camila Barbosa,90190190199,,1996-07-21,21970010011,RJ,Duque de Caxias,default.png,hash123,camilabarbosa@example.com,0,0,0
-17,Ricardo Melo,11211211210,,1984-10-12,31970010012,MG,Betim,default.png,hash123,ricardomelo@example.com,0,0,0
-18,Larissa Prado,22322322321,,1997-02-28,11970010013,SP,Sorocaba,default.png,hash123,larissaprado@example.com,0,0,0
-19,Thiago Ribeiro,33433433432,,1990-09-14,41970010014,PR,Maringá,default.png,hash123,thiagoribeiro@example.com,0,0,0
-20,Vanessa Duarte,44544544543,,1986-05-19,21970010015,RJ,Nova Iguaçu,default.png,hash123,vanessaduarte@example.com,0,0,0
-21,ONG Mesa Solidária,,33344455566677,,11970010016,SP,Guarulhos,default.png,hash123,ongmesasolidaria@example.com,0,0,0
-22,Cooperativa Aliança,,44455566677788,,31970010017,MG,Montes Claros,default.png,hash123,cooperativaalianca@example.com,0,0,0
-23,Marcos Vinícius,55655655654,,1992-12-25,11970010018,SP,São José dos Campos,default.png,hash123,marcosvinicius@example.com,0,0,0
-24,Aline Farias,66766766765,,1998-01-09,21970010019,RJ,Petrópolis,default.png,hash123,alinefarias@example.com,0,0,0
-25,Bruno Teixeira,77877877876,,1983-04-27,31970010020,MG,Poços de Caldas,default.png,hash123,brunoteixeira@example.com,0,0,0
+_id,tipo_usuario,nm_usuario,ch_cnpj_usuario,nr_celular_usuario,sg_estado_usuario,nm_cidade_usuario,cd_foto_usuario,cd_senha_usuario,cd_email_usuario,fg_admin,qt_advertencias_usuario,fg_usuario_deletado,ch_cpf_usuario,dt_nascimento_usuario
+673e418eebd8e8b395d9b131,pj,Sapatos LTDA,101010101010,121212121,BA,Xique-Xique,default.png,$2b$12$b5PvnF9FqU5g6jRoiKu8IOdHD57e//e9XhNMtjdwmkLsEGIfFbzQi,s@gmail.com,0,0,0,,
+673e3f5bc4dd0fbddbf30589,pf,Maria Santos,,11901234567,RJ,Rio de Janeiro,2.png,$2a$12$qYnfcan1eAudlxLP0mfxVeNk8Qnu8PHwhirai94t1F8ppGtG3eNw2,maria@example.com,0,0,0,98765432109,1985-12-10 00:00:00
+673e3f5bc4dd0fbddbf3058a,pf,Pedro Oliveira,,11955556666,MG,Belo Horizonte,3.png,$2a$12$qYnfcan1eAudlxLP0mfxVeNk8Qnu8PHwhirai94t1F8ppGtG3eNw2,pedro@example.com,0,0,0,45678901234,1978-08-20 00:00:00
+673e3f5bc4dd0fbddbf3058b,pj,Empresa ABC Ltda,12345678901234,11999998888,SP,São Paulo,4.png,$2a$12$qYnfcan1eAudlxLP0mfxVeNk8Qnu8PHwhirai94t1F8ppGtG3eNw2,empresa@example.com,0,0,0,,
+673e4089ebd8e8b395d9b121,pf,r,,1212121212,SP,Franca,default.png,$2b$12$b5PvnF9FqU5g6jRoiKu8IOdHD57e//e9XhNMtjdwmkLsEGIfFbzQi,r@gmail.com,0,0,0,12312312312,2000-12-12 00:00:00
+673e3f5bc4dd0fbddbf3058c,pj,Comércio XYZ Ltda,98765432109876,11888887777,RJ,Rio de Janeiro,default.png,$2a$12$qYnfcan1eAudlxLP0mfxVeNk8Qnu8PHwhirai94t1F8ppGtG3eNw2,comercio@example.com,0,0,0,,
+673e3f5bc4dd0fbddbf30588,pf,Yago Silva,,11987654321,SP,São Paulo,1.png,$2a$12$qYnfcan1eAudlxLP0mfxVeNk8Qnu8PHwhirai94t1F8ppGtG3eNw2,yago@email.com,0,0,0,12345678901,1990-05-15 00:00:00
+69c5efe49f86baf046e1b625,pf,Teste Netlify,,12121212121,RJ,Cantagalo,default.png,$2b$12$4Hh16YO5E6gjkb1Q0ccaBubVHYXd6UR8WlwVR6ptKLWowc.g5iaAG,netlify@gmail.com,0,0,0,12121212122,2000-04-06 00:00:00
+69c7072ba75520b26cb936f7,pf,Frederico Pessoa Barbosa,,16992640134,SP,Franca,default.png,$2b$12$NVPOPQiYKAZzqrj3Nk4VpebJ0boKQbiB.s.9mWRE5KXZFR.ZjPxCy,frederico@gmail.com,0,0,0,11111111111,2003-05-31 00:00:00
+69c728f34d93cfae68784f85,pf,Yago Mouro,,11111111111,MT,Aripuanã,default.png,$2b$12$tVPV.agM9F5/BdKMsXD90.Ofxuoj8sWsF/H9QDn5VT3w/tb.UPcO2,yago@gmail.com,0,0,0,11111111112,2026-03-05 00:00:00
+69f14030aae2dfb2ec2a340c,pf,Teste33,,11212121212,RJ,Cardoso Moreira,default.png,$2b$12$cT9q3rJzUuzgk.91e8ArQOIPYMcLDaJ94jrA/f2s/Op2Dc6ukObNC,teste33@gmail.com,0,0,0,12121212121,2026-04-17 00:00:00
+69f15962aae2dfb2ec2a3410,pf,Teste 2,,66666666666,RJ,Belford Roxo,default.png,$2b$12$a8kR6p9G8vRNxZx9kwkBE.8o4wEgWxZPWaeldeTFtvBEr9MJlbtPq,teste2@gmail.com,0,0,0,33333333333,2000-10-10 00:00:00
+69f15c8faae2dfb2ec2a3411,pf,Frederico Barbosa,,(16) 99999-9999,SP,Franca,default.png,$2b$12$k5fU2.13w5TILB.HPntqk.MEnilu5jOgzJY./Nb7G8HpV4WrTcjJi,fredericopessoa13@gmail.com,0,0,0,44444444444,2003-05-31 00:00:00
+6a2364f24fa406e15e209691,pf,Teste Claude,,(11) 99999-0000,SP,Sao Paulo,default.png,$2b$12$081nnOmN/fracRGfKrpb7OPDqFcAESWYeubRwCM1zGAPU.w9Xj28W,teste.claude@teste.com,0,0,0,123.456.789-09,2000-01-01 00:00:00
+6a23684ed048b6bf20815a22,pf,Ana Silva,,11956272734,PI,Teresina,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,ana.silva0@hotmail.com,0,0,0,97320815774,1976-03-08 00:00:00
+6a23684ed048b6bf20815a23,pf,João Oliveira,,92983893513,ES,Vitória,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,joao.oliveira1@hotmail.com,0,0,0,35897207145,1998-08-19 00:00:00
+6a23684ed048b6bf20815a24,pf,Maria Santos,,41978978457,PA,Belém,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,maria.santos2@outlook.com,0,0,0,29196133218,1965-03-03 00:00:00
+6a23684ed048b6bf20815a25,pf,Pedro Costa,,41925310463,MG,Belo Horizonte,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,pedro.costa3@yahoo.com.br,0,0,0,66326702503,1979-12-18 00:00:00
+6a23684ed048b6bf20815a26,pf,Carla Ferreira,,92904985091,PI,Teresina,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,carla.ferreira4@uol.com.br,0,0,0,72837715674,1963-03-26 00:00:00
+6a23684ed048b6bf20815a27,pf,Lucas Almeida,,41996419177,GO,Goiânia,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,lucas.almeida5@gmail.com,0,0,0,71774692750,1972-07-10 00:00:00
+6a23684ed048b6bf20815a28,pf,Juliana Lima,,92940021023,MG,Belo Horizonte,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,juliana.lima6@uol.com.br,0,0,0,76005883705,1995-10-13 00:00:00
+6a23684ed048b6bf20815a29,pf,Rafael Souza,,71905980940,RJ,Rio de Janeiro,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,rafael.souza7@outlook.com,0,0,0,30712684235,1994-11-25 00:00:00
+6a23684ed048b6bf20815a2a,pf,Fernanda Pereira,,71919831191,SC,Florianópolis,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,fernanda.pereira8@uol.com.br,0,0,0,14720430499,1967-08-06 00:00:00
+6a23684ed048b6bf20815a2b,pf,Thiago Rodrigues,,92980938676,PE,Recife,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,thiago.rodrigues9@uol.com.br,0,0,0,27280205134,1967-01-20 00:00:00
+6a23684ed048b6bf20815a2c,pf,Camila Martins,,71963929118,ES,Vitória,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,camila.martins10@uol.com.br,0,0,0,03509931012,2000-11-19 00:00:00
+6a23684ed048b6bf20815a2d,pf,Gabriel Carvalho,,81955610630,PI,Teresina,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,gabriel.carvalho11@gmail.com,0,0,0,61644882685,1988-11-13 00:00:00
+6a23684ed048b6bf20815a2e,pf,Beatriz Nascimento,,41977486746,RJ,Rio de Janeiro,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,beatriz.nascimento12@hotmail.com,0,0,0,29206019840,1962-02-12 00:00:00
+6a23684ed048b6bf20815a2f,pf,Mateus Araújo,,11912729711,RJ,Rio de Janeiro,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,mateus.araujo13@gmail.com,0,0,0,57881097331,1969-04-11 00:00:00
+6a23684ed048b6bf20815a30,pf,Larissa Moreira,,85972206353,MT,Cuiabá,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,larissa.moreira14@uol.com.br,0,0,0,74816202631,1989-08-15 00:00:00
+6a23684ed048b6bf20815a31,pf,Gustavo Barbosa,,61920238028,SP,São Paulo,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,gustavo.barbosa15@outlook.com,0,0,0,90367157921,1962-07-10 00:00:00
+6a23684ed048b6bf20815a32,pf,Patrícia Ribeiro,,11900017566,CE,Fortaleza,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,patricia.ribeiro16@gmail.com,0,0,0,96436265796,1977-10-11 00:00:00
+6a23684ed048b6bf20815a33,pf,Diego Teixeira,,61917797475,PE,Recife,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,diego.teixeira17@uol.com.br,0,0,0,70925305899,1973-02-19 00:00:00
+6a23684ed048b6bf20815a34,pf,Amanda Nunes,,21901719200,PE,Recife,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,amanda.nunes18@outlook.com,0,0,0,40266756677,1988-04-14 00:00:00
+6a23684ed048b6bf20815a35,pf,Victor Gomes,,71974428911,SP,Ribeirão Preto,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,victor.gomes19@yahoo.com.br,0,0,0,92113213255,1960-11-22 00:00:00
+6a23684ed048b6bf20815a36,pf,Isabela Dias,,71959688777,MG,Belo Horizonte,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,isabela.dias20@uol.com.br,0,0,0,31929950258,1965-02-13 00:00:00
+6a23684ed048b6bf20815a37,pf,Bruno Castro,,51999019748,PR,Curitiba,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,bruno.castro21@uol.com.br,0,0,0,95993256969,1995-05-10 00:00:00
+6a23684ed048b6bf20815a38,pf,Renata Campos,,71979770187,MA,São Luís,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,renata.campos22@gmail.com,0,0,0,76543166702,2002-12-05 00:00:00
+6a23684ed048b6bf20815a39,pf,Felipe Cardoso,,51968469134,GO,Goiânia,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,felipe.cardoso23@uol.com.br,0,0,0,09921036872,1998-02-03 00:00:00
+6a23684ed048b6bf20815a3a,pf,Natália Monteiro,,71999940826,AL,Maceió,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,natalia.monteiro24@uol.com.br,0,0,0,32944661101,1968-04-13 00:00:00
+6a23684ed048b6bf20815a3b,pf,Eduardo Pinto,,61912505342,RS,Porto Alegre,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,eduardo.pinto25@hotmail.com,0,0,0,60650222331,1982-03-20 00:00:00
+6a23684ed048b6bf20815a3c,pf,Vanessa Rocha,,92933010241,GO,Goiânia,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,vanessa.rocha26@hotmail.com,0,0,0,44406499462,1992-02-14 00:00:00
+6a23684ed048b6bf20815a3d,pf,Henrique Correia,,81950324721,PR,Curitiba,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,henrique.correia27@yahoo.com.br,0,0,0,58524587318,1964-09-28 00:00:00
+6a23684ed048b6bf20815a3e,pf,Letícia Andrade,,85958267773,GO,Goiânia,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,leticia.andrade28@gmail.com,0,0,0,36396442483,1987-04-11 00:00:00
+6a23684ed048b6bf20815a3f,pf,Rodrigo Freitas,,81908937536,MA,São Luís,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,rodrigo.freitas29@uol.com.br,0,0,0,18809034372,1992-02-06 00:00:00
+6a23684ed048b6bf20815a40,pf,Aline Cavalcanti,,81904280239,AL,Maceió,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,aline.cavalcanti30@gmail.com,0,0,0,72204616248,1998-09-01 00:00:00
+6a23684ed048b6bf20815a41,pf,Marcelo Borges,,11987498551,ES,Vitória,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,marcelo.borges31@gmail.com,0,0,0,06903195464,1998-05-25 00:00:00
+6a23684ed048b6bf20815a42,pf,Cristina Vieira,,21966172768,SP,Campinas,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,cristina.vieira32@outlook.com,0,0,0,37078646076,1966-10-24 00:00:00
+6a23684ed048b6bf20815a43,pf,Alexandre Melo,,81918794856,MG,Belo Horizonte,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,alexandre.melo33@gmail.com,0,0,0,88660424674,2001-08-13 00:00:00
+6a23684ed048b6bf20815a44,pf,Priscila Marques,,92959055431,BA,Salvador,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,priscila.marques34@hotmail.com,0,0,0,24126445813,1984-12-02 00:00:00
+6a23684ed048b6bf20815a45,pj,Mercado Bom Preço LTDA,43421420147579,71919706352,RS,Porto Alegre,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,mercado.bom.preco.ltda100@yahoo.com.br,0,0,0,,
+6a23684ed048b6bf20815a46,pj,Supermercado Central SA,97108239125527,85983859319,SE,Aracaju,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,supermercado.central.sa101@hotmail.com,0,0,0,,
+6a23684ed048b6bf20815a47,pj,Atacadão do Povo LTDA,02466110233200,11920829706,ES,Vitória,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,atacadao.do.povo.ltda102@outlook.com,0,0,0,,
+6a23684ed048b6bf20815a48,pj,Padaria São José LTDA,58620848167536,71938359275,GO,Goiânia,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,padaria.sao.jose.ltda103@gmail.com,0,0,0,,
+6a23684ed048b6bf20815a49,pj,Distribuidora Norte Sul SA,32610521513295,11930811144,ES,Vitória,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,distribuidora.norte.sul.sa104@hotmail.com,0,0,0,,
+6a23684ed048b6bf20815a4a,pj,Hortifruti Verde Vida LTDA,68041653447455,61980075768,RJ,Rio de Janeiro,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,hortifruti.verde.vida.ltda105@hotmail.com,0,0,0,,
+6a23684ed048b6bf20815a4b,pj,Cooperativa dos Agricultores,38467501198544,31944294436,SE,Aracaju,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,cooperativa.dos.agricultores106@hotmail.com,0,0,0,,
+6a23684ed048b6bf20815a4c,pj,Frigorífico São Paulo SA,78690301029703,41977613142,BA,Salvador,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,frigorifico.sao.paulo.sa107@uol.com.br,0,0,0,,
+6a23684ed048b6bf20815a4d,pj,Laticínios do Vale LTDA,32673506485120,71995106041,AL,Maceió,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,laticinios.do.vale.ltda108@uol.com.br,0,0,0,,
+6a23684ed048b6bf20815a4e,pj,Grãos e Cereais LTDA,60201254343654,51942464479,BA,Salvador,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,graos.e.cereais.ltda109@yahoo.com.br,0,0,0,,
+6a23684ed048b6bf20815a4f,pj,Armazém Geral Nordeste SA,96175154387119,31907745976,RS,Porto Alegre,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,armazem.geral.nordeste.sa110@yahoo.com.br,0,0,0,,
+6a23684ed048b6bf20815a50,pj,Alimentos Frescos LTDA,49818612964058,41908382493,RS,Porto Alegre,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,alimentos.frescos.ltda111@gmail.com,0,0,0,,
+6a23684ed048b6bf20815a51,pj,Beneficente Nossa Senhora,80546829921329,92909351155,MA,São Luís,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,beneficente.nossa.senhora112@uol.com.br,0,0,0,,
+6a23684ed048b6bf20815a52,pj,Instituto Social Vida SA,18745829800233,92937956279,MT,Cuiabá,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,instituto.social.vida.sa113@hotmail.com,0,0,0,,
+6a23684ed048b6bf20815a53,pj,ONG Pão e Vida,45060342761750,21990101516,CE,Fortaleza,default.png,$2b$12$QGXXWSVW3dIv1VMtNCUWNeHd7ESaSFcUd6tK/E5MUrcQWSgeb/Azq,ong.pao.e.vida114@gmail.com,0,0,0,,

@@ -87,7 +87,9 @@ export default class MineraoDbService {
   /**
    * Obter recomendações por alimento (do banco)
    */
-  async obterRecomendacoesPorAlimento(alimento: string): Promise<any[]> {
+  async obterRecomendacoesPorAlimento(
+    alimento: string
+  ): Promise<any[]> {
     const regras = await this.prisma.mineracao_regra.findMany({
       where: {
         ativo: true,
@@ -108,20 +110,68 @@ export default class MineraoDbService {
     }));
   }
 
+  async obterItensMetaDaCampanha(campanhaId: string): Promise<string[]> {
+    const metaItens = await this.prisma.alimento_campanha.findMany({
+      where: { campanha_id: campanhaId },
+      select: { alimento_id: true },
+    });
+
+    if (metaItens.length === 0) {
+      return [];
+    }
+
+    const alimentoIds = metaItens.map((item) => item.alimento_id);
+
+    const alimentos = await this.prisma.alimento.findMany({
+      where: { id: { in: alimentoIds } },
+      select: { nm_alimento: true },
+    });
+
+    return alimentos.map((item) => item.nm_alimento);
+  }
+
   /**
    * Obter recomendações por múltiplos alimentos
    */
-  async obterRecomendacoesPorAlimentos(alimentos: string[]): Promise<any[]> {
+  async obterRecomendacoesPorAlimentos(
+    alimentos: string[],
+    campanhaId?: string
+  ): Promise<any[]> {
     const recomendacoes: any[] = [];
+
+    const itensPermitidos = campanhaId
+      ? await this.obterItensMetaDaCampanha(campanhaId)
+      : [];
+
+    const permitidosSet = new Set(
+      itensPermitidos.map((item) => item.toLowerCase())
+    );
+    const alimentosConsultadosSet = new Set(
+      alimentos.map((item) => item.toLowerCase())
+    );
 
     for (const alimento of alimentos) {
       const recs = await this.obterRecomendacoesPorAlimento(alimento);
       recomendacoes.push(...recs);
     }
 
-    // Remover duplicatas
+    // Filtrar itens de recomendação para a meta da campanha
+    const recomendacoesFiltradas = recomendacoes.filter((rec) => {
+      const sugestao = String(rec.alimentoSugerido || "").toLowerCase();
+
+      if (alimentosConsultadosSet.has(sugestao)) {
+        return false;
+      }
+
+      if (campanhaId && permitidosSet.size > 0) {
+        return permitidosSet.has(sugestao);
+      }
+
+      return true;
+    });
+
     const recsUnicas = Array.from(
-      new Map(recomendacoes.map((r) => [r.alimentoSugerido, r])).values()
+      new Map(recomendacoesFiltradas.map((r) => [r.alimentoSugerido, r])).values()
     );
 
     return recsUnicas.sort((a, b) => b.confianca - a.confianca);

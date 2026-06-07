@@ -21,11 +21,9 @@ def carregar_dados():
 def limpar_dados(doacoes, alimentos):
     print("Limpando dados...")
 
-    # Remover valores nulos
     doacoes = doacoes.dropna()
     alimentos = alimentos.dropna()
 
-    # Remover duplicados
     doacoes = doacoes.drop_duplicates()
     alimentos = alimentos.drop_duplicates()
 
@@ -33,13 +31,17 @@ def limpar_dados(doacoes, alimentos):
 
 
 # =========================
-# 3. ENRIQUECER DADOS
+# 3. JUNTAR DADOS
 # =========================
 
 def juntar_dados(doacoes, alimentos):
     print("Juntando dados...")
 
-    df = doacoes.merge(alimentos, on='cd_alimento')
+    df = doacoes.merge(
+        alimentos,
+        left_on='alimento_id',
+        right_on='_id'
+    )
 
     return df
 
@@ -51,82 +53,170 @@ def juntar_dados(doacoes, alimentos):
 def criar_transacoes(df):
     print("Criando transações por campanha...")
 
-    # Agrupar alimentos por campanha
-    transacoes = df.groupby('cd_campanha')['nm_alimento'].apply(list).tolist()
+    transacoes = (
+        df.groupby('campanha_id')['nm_alimento']
+        .apply(list)
+        .tolist()
+    )
 
     return transacoes
 
 
 # =========================
-# 5. TRANSFORMAR EM MATRIZ BINÁRIA
+# 5. MATRIZ BINÁRIA
 # =========================
 
 def transformar_matriz(transacoes):
     print("Transformando em matriz binária...")
 
     te = TransactionEncoder()
+
     te_array = te.fit(transacoes).transform(transacoes)
 
-    df_final = pd.DataFrame(te_array, columns=te.columns_).astype(bool)
+    df_final = pd.DataFrame(
+        te_array,
+        columns=te.columns_
+    ).astype(bool)
 
     return df_final
 
 
 # =========================
-# 6. SALVAR RESULTADO
+# 6. SALVAR
 # =========================
 
 def salvar_dados(df_final):
     print("Salvando arquivo final...")
 
-    df_final.to_csv('transacoes_tratadas.csv', index=False)
+    df_final.to_csv(
+        'transacoes_tratadas.csv',
+        index=False
+    )
 
     print("Arquivo salvo com sucesso")
 
 
 # =========================
-# 7. EXECUÇÃO PRINCIPAL
+# CAMPANHA E META DE ALIMENTOS
+# =========================
+
+def carregar_itens_meta_campanha(campanha_id):
+    print(f"Carregando itens da meta da campanha {campanha_id}...")
+
+    alimentos = pd.read_csv('../base_dados/alimento.csv')
+    alimentos_campanha = pd.read_csv('../base_dados/alimento_campanha.csv')
+
+    meta = alimentos_campanha[
+        alimentos_campanha['campanha_id'] == campanha_id
+    ]
+
+    if meta.empty:
+        return []
+
+    meta = meta.merge(
+        alimentos,
+        left_on='alimento_id',
+        right_on='_id',
+        how='left'
+    )
+
+    return (
+        meta['nm_alimento']
+        .dropna()
+        .astype(str)
+        .unique()
+        .tolist()
+    )
+
+
+def carregar_itens_doacao_campanha(campanha_id):
+    print(f"Carregando itens doados na campanha {campanha_id}...")
+
+    doacoes, alimentos = carregar_dados()
+
+    doacoes_campanha = doacoes[
+        doacoes['campanha_id'] == campanha_id
+    ]
+
+    if doacoes_campanha.empty:
+        return []
+
+    doacoes_campanha = doacoes_campanha.merge(
+        alimentos,
+        left_on='alimento_id',
+        right_on='_id',
+        how='left'
+    )
+
+    return (
+        doacoes_campanha['nm_alimento']
+        .dropna()
+        .astype(str)
+        .unique()
+        .tolist()
+    )
+
+
+# =========================
+# 7. GERAR BASE
+# =========================
+
+def gerar_base_tratada():
+    print("Gerando base tratada para Apriori...")
+
+    doacoes, alimentos = carregar_dados()
+
+    doacoes, alimentos = limpar_dados(
+        doacoes,
+        alimentos
+    )
+
+    df = juntar_dados(
+        doacoes,
+        alimentos
+    )
+
+    transacoes = criar_transacoes(df)
+
+    df_final = transformar_matriz(
+        transacoes
+    )
+
+    return df_final
+
+
+# =========================
+# MAIN
 # =========================
 
 def main():
-    # 1. Carregar
+
     doacoes, alimentos = carregar_dados()
 
-    # 2. Limpar
-    doacoes, alimentos = limpar_dados(doacoes, alimentos)
+    doacoes, alimentos = limpar_dados(
+        doacoes,
+        alimentos
+    )
 
-    # 3. Juntar
-    df = juntar_dados(doacoes, alimentos)
+    df = juntar_dados(
+        doacoes,
+        alimentos
+    )
 
-    # 4. Criar transações
     transacoes = criar_transacoes(df)
 
     print("\nExemplo de transações:")
-    print(transacoes.head())
+    print(transacoes[:5])
 
-    # 5. Transformar em matriz
-    df_final = transformar_matriz(transacoes)
+    df_final = transformar_matriz(
+        transacoes
+    )
 
     print("\nExemplo da matriz final:")
     print(df_final.head())
 
-    # 6. Salvar
     salvar_dados(df_final)
 
-def gerar_base_tratada():
-    print("Gerando base tratada para Apriori...")
-    
-    doacoes, alimentos = carregar_dados()
-    doacoes, alimentos = limpar_dados(doacoes, alimentos)
-    df = juntar_dados(doacoes, alimentos)
-    transacoes = criar_transacoes(df)
-    df_final = transformar_matriz(transacoes)
-    
-    return df_final
-
-# =========================
-# RODAR SCRIPT
-# =========================
 
 if __name__ == "__main__":
     main()
