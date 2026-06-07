@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Footer } from "../../components/Footer";
 import { Navbar } from "../../components/Navbar";
 
@@ -8,9 +8,12 @@ import { IEstadoCidades } from "../../types/IEstadoCidade";
 import api from "../../services/api";
 import { toast } from "sonner";
 import { imagemCampanha } from "../../utils/campanha-imagem";
+import { AuthContext } from "../../contexts/authContext";
 
 export const Descobrir = () => {
+  const { authenticated } = useContext(AuthContext);
   const [campanhas, setCampanhas] = useState<ICampanhaAlimento[]>([]);
+  const [recomendacoes, setRecomendacoes] = useState<string[]>([]);
   const [listaEstadosCidades, setListaEstadosCidades] = useState<
     IEstadoCidades[]
   >([]);
@@ -28,6 +31,41 @@ export const Descobrir = () => {
         console.log("Error: " + err);
       });
   }, []);
+
+  useEffect(() => {
+    if (!authenticated) return;
+    const fetchRecomendacoes = async () => {
+      try {
+        const doacoesResp = await api.get("/doacoes/minhas");
+        const doacoes: any[] = doacoesResp.data;
+        const alimentosUnicos = new Set<string>();
+        for (const d of doacoes) {
+          for (const a of d.alimentos_doados ?? []) {
+            const nome = a.alimento?.nome ?? "";
+            if (nome) alimentosUnicos.add(nome);
+          }
+        }
+        if (alimentosUnicos.size === 0) return;
+        const recResp = await api.post("/mineracao/recomendacoes", {
+          alimentos: Array.from(alimentosUnicos),
+        });
+        const lista = recResp.data?.recomendacoes ?? recResp.data ?? [];
+        const sugeridos: string[] = lista
+          .map((r: any) => r.alimentoSugerido ?? r)
+          .filter((s: string) => !alimentosUnicos.has(s));
+        setRecomendacoes(sugeridos);
+      } catch (_) {}
+    };
+    fetchRecomendacoes();
+  }, [authenticated]);
+
+  const campanhaRecomendada = (campanha: ICampanhaAlimento): boolean => {
+    if (recomendacoes.length === 0) return false;
+    const recSet = new Set(recomendacoes.map((r) => r.toLowerCase()));
+    return campanha.alimentos.some((a) =>
+      recSet.has(a.nm_alimento.toLowerCase())
+    );
+  };
 
   useEffect(() => {
     if (listaEstadosCidades.length > 0) {
@@ -203,13 +241,24 @@ export const Descobrir = () => {
               <h1 className="titulo black">Campanhas mais recentes</h1>
             )}
             <div className="campanhas row">
-              {campanhas.map((campanha) => (
+              {[
+                ...campanhas.filter(campanhaRecomendada),
+                ...campanhas.filter((c) => !campanhaRecomendada(c)),
+              ].map((campanha) => {
+                const recomendada = campanhaRecomendada(campanha);
+                return (
                 <Link
                   key={campanha.id}
                   className="campanha-link"
                   to={`/campanhas/${campanha.id}`}
                 >
-                  <div className="campanha">
+                  <div className={`campanha${recomendada ? " campanha-recomendada" : ""}`}>
+                    {recomendada && (
+                      <div className="badge-recomendado">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#027ba1"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                        <span>Recomendado para você</span>
+                      </div>
+                    )}
                     <div className="imagem-campanha">
                       <img
                         src={imagemCampanha(campanha.id_campanha, campanha.cd_imagem_campanha)}
@@ -313,7 +362,8 @@ export const Descobrir = () => {
                     </div>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           </div>
 
