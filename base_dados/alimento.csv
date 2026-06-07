@@ -1,31 +1,51 @@
-cd_alimento,nm_alimento,sg_medida_alimento,nm_tipo_alimento,cd_tipo_alimento
-1,Leite,L,Mais doados,1
-2,Leite em pó,KG,Mais doados,1
-3,Macarrão,KG,Mais doados,1
-4,Café,KG,Mais doados,1
-5,Açúcar,KG,Mais doados,1
-6,Óleo,L,Mais doados,1
-7,Ovos,DZ,Mais doados,1
-8,Azeite,L,Mais doados,1
-9,Sal,KG,Mais doados,1
-10,Farinha de trigo,KG,Mais doados,1
-11,Fubá,KG,Mais doados,1
-12,Arroz,KG,Mais doados,1
-13,Feijão,KG,Mais doados,1
-14,Carne Bovina,KG,Carnes,2
-15,Linguiça,KG,Carnes,2
-16,Carne de Frango,KG,Carnes,2
-17,Alface,KG,Verduras e Legumes,3
-18,Tomate,KG,Verduras e Legumes,3
-19,Cebola,KG,Verduras e Legumes,3
-20,Batata,KG,Verduras e Legumes,3
-21,Cenoura,KG,Verduras e Legumes,3
-22,Abóbora,KG,Verduras e Legumes,3
-23,Laranja,KG,Frutas,4
-24,Banana,KG,Frutas,4
-25,Maçã,KG,Frutas,4
-26,Mamão,KG,Frutas,4
-27,Queijo,KG,Derivados do leite,5
-28,Margarina,KG,Derivados do leite,5
-29,Iogurte,L,Derivados do leite,5
-30,Creme de leite,KG,Derivados do leite,5
+_id,nm_alimento,sg_medida_alimento,nm_tipo_alimento,cd_tipo_alimento
+673e3f5bc4dd0fbddbf3055b,Óleo,l,Mais doados,1
+673e3f5bc4dd0fbddbf3057e,Salsa,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30582,Melancia,kg,Frutas,4
+673e3f5bc4dd0fbddbf3055a,Açúcar,kg,Mais doados,1
+673e3f5bc4dd0fbddbf3055f,Farinha de trigo,kg,Mais doados,1
+673e3f5bc4dd0fbddbf30576,Ervilha,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30566,Carne de Frango,kg,Carnes,2
+673e3f5bc4dd0fbddbf3056b,Cebola,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30575,Couve,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf3057b,Pepino,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf3057f,Laranja,kg,Frutas,4
+673e3f5bc4dd0fbddbf30585,Manga,kg,Frutas,4
+673e3f5bc4dd0fbddbf30586,Abacaxi,kg,Frutas,4
+673e3f5bc4dd0fbddbf3055e,Sal,kg,Mais doados,1
+673e3f5bc4dd0fbddbf30562,Linguiça,kg,Carnes,2
+673e3f5bc4dd0fbddbf30563,Carne de Porco,kg,Carnes,2
+673e3f5bc4dd0fbddbf30572,Beterraba,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30587,Pêra,kg,Frutas,4
+673e3f5bc4dd0fbddbf30558,Macarrão,kg,Massa,1
+673e3f5bc4dd0fbddbf30567,Carne de Peixe,kg,Carnes,2
+673e3f5bc4dd0fbddbf30574,Cebolinha,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30577,Espinafre,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30578,Lentilha,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30579,Mandioca,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30564,Bisteca,kg,Carnes,2
+673e3f5bc4dd0fbddbf30573,Brócolis,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30583,Limão,kg,Frutas,4
+673e3f5bc4dd0fbddbf30556,Arroz,kg,Grão,1
+673e3f5bc4dd0fbddbf30559,Café,kg,Mais doados,1
+673e3f5bc4dd0fbddbf30568,Alface,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30569,Tomate,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30570,Aveia,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30571,Batata-doce,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf3057a,Milho,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30581,Maçã,kg,Frutas,4
+673e3f5bc4dd0fbddbf30584,Tangerina,kg,Frutas,4
+673e3f5bc4dd0fbddbf3056e,Pimentão,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf3056f,Abóbora,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30560,Fubá,kg,Mais doados,1
+673e3f5bc4dd0fbddbf30565,Mortadela,kg,Carnes,2
+673e3f5bc4dd0fbddbf30557,Feijão,kg,Grão,1
+673e3f5bc4dd0fbddbf3055c,Ovos,dz,Mais doados,1
+673e3f5bc4dd0fbddbf3056c,Batata,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30561,Carne Bovina,kg,Carnes,2
+673e3f5bc4dd0fbddbf3057c,Rúcula,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf30580,Mamão,kg,Frutas,4
+673e3f5bc4dd0fbddbf3055d,Azeite,l,Mais doados,1
+673e3f5bc4dd0fbddbf3056a,Alho,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf3056d,Cenoura,kg,Verduras e Legumes,3
+673e3f5bc4dd0fbddbf3057d,Repolho,kg,Verduras e Legumes,3
