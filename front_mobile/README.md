@@ -10,32 +10,32 @@ Aplicação Flutter (Android) que conecta doadores de alimentos com campanhas so
 
 ## 📋 Índice
 
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Telas](#-telas)
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias](#-tecnologias)
-- [Instalação](#-instalação)
-- [Uso](#-uso)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
+- Sobre o Projeto
+- Telas
+- Funcionalidades
+- Tecnologias
+- Instalação
+- Uso
+- Estrutura do Projeto
 
 ## 📱 Telas
 
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telainicial.jpeg" alt="Tela Inicial"  width="250"><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telainicial.jpeg" alt="Tela Inicial"  width="250"><br/>
       <sub>Tela Inicial</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telalogin.jpeg" alt="Tela de Login"  width="250"><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telalogin.jpeg" alt="Tela de Login"  width="250"><br/>
       <sub>Tela de Login</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telacadastropf.jpeg" alt="Tela de Cadastro Pessoa Física"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telacadastropf.jpeg" alt="Tela de Cadastro Pessoa Física"  width="250"/><br/>
       <sub>Tela de Cadastro Pessoa Física</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telacadastropj.jpeg" alt="Tela de Cadastro Pessoa Jurídica"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telacadastropj.jpeg" alt="Tela de Cadastro Pessoa Jurídica"  width="250"/><br/>
       <sub>Tela de Cadastro Pessoa Jurídica</sub>
     </td>
   </tr>
@@ -44,19 +44,19 @@ Aplicação Flutter (Android) que conecta doadores de alimentos com campanhas so
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-teladescobrir.jpeg" alt="Tela Descobrir"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-teladescobrir.jpeg" alt="Tela Descobrir"  width="250"/><br/>
       <sub>Tela Descobrir</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telacadastrarcampanha.jpeg" alt="Tela Criar Campanha"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telacadastrarcampanha.jpeg" alt="Tela Criar Campanha"  width="250"/><br/>
       <sub>Tela Criar Campanha</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-modalsobrenos.jpeg" alt="Modal Sobre Nós"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-modalsobrenos.jpeg" alt="Modal Sobre Nós"  width="250"/><br/>
       <sub>Modal Sobre Nós</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telacampanha.jpeg" alt="Tela de Campanha"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telacampanha.jpeg" alt="Tela de Campanha"  width="250"/><br/>
       <sub>Tela de Campanha</sub>
     </td>
   </tr>
@@ -65,19 +65,19 @@ Aplicação Flutter (Android) que conecta doadores de alimentos com campanhas so
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telapainel-minhasdocampanhas.jpeg" alt="Tela Painel Minhas Campanhas"  width="250"><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telapainel-minhasdocampanhas.jpeg" alt="Tela Painel Minhas Campanhas"  width="250"><br/>
       <sub>Tela Painel Minhas Campanhas</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telapainel-minhasdoacoes.jpeg" alt="Tela Painel Minhas Doações"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telapainel-minhasdoacoes.jpeg" alt="Tela Painel Minhas Doações"  width="250"/><br/>
       <sub>Tela Painel Minhas Doações</sub>
     </td>
     <td align="center"> 
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telachat.jpeg" alt="Tela de Chat"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telachat.jpeg" alt="Tela de Chat"  width="250"/><br/>
       <sub>Tela de Chat</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile-telameusdados.jpeg" alt="Tela Meus Dados"  width="250"/><br/>
+      <img src="https://github.com/yagomouro/DSM-PI6-2026-1/blob/master/img_telas/mobile/mobile-telameusdados.jpeg" alt="Tela Meus Dados"  width="250"/><br/>
       <sub>Tela Meus Dados</sub>
     </td>
   </tr>
