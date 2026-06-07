@@ -171,7 +171,6 @@ export const Campanha = () => {
           toast.error("Erro ao fazer doação, tente novamente mais tarde");
         } else {
           console.log("Sucesso ao salvar dados no banco ", responseData);
-          setModalVisible(false);
           const donatedFoodNames = alimentos_doacao
             .map((item: any) =>
               campanha?.alimentos?.find(
