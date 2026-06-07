@@ -5,7 +5,6 @@ import '../components/header_login.dart';
 import '../components/footer.dart';
 import '../components/pagina_inicial.dart';
 import '../models/auth_manager.dart';
-import '../services/analytics_service.dart';
 
 class PaginaInicial extends StatefulWidget {
   const PaginaInicial({super.key});
@@ -15,17 +14,6 @@ class PaginaInicial extends StatefulWidget {
 }
 
 class _PaginaInicialState extends State<PaginaInicial> {
-  @override
-  void initState() {
-    super.initState();
-    AnalyticsService().trackPageView('pagina_inicial');
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = Provider.of<AuthManager>(context).isLoggedIn;
@@ -42,7 +30,6 @@ class _PaginaInicialState extends State<PaginaInicial> {
                 rightText: '',
                 rightButtonText: 'Login',
                 onRightButtonPressed: () {
-                  AnalyticsService().trackButtonClick('Login', 'Header');
                   Navigator.of(context).pushNamed('/login');
                 },
               ),
@@ -51,17 +38,6 @@ class _PaginaInicialState extends State<PaginaInicial> {
             const Footer(),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          AnalyticsService().trackButtonClick(
-            'Analytics Dashboard',
-            'FloatingButton',
-          );
-          Navigator.of(context).pushNamed('/analytics');
-        },
-        backgroundColor: const Color(0xFF027ba1),
-        child: const Icon(Icons.analytics, color: Colors.white),
       ),
     );
   }

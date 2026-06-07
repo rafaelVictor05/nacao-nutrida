@@ -1,53 +1,24 @@
 import 'package:flutter/material.dart';
 import '../components/header_login.dart';
 import '../components/cadastro_campanha.dart';
-import '../services/analytics_service.dart';
-
-class CadastrarPedidoPage extends StatefulWidget {
+class CadastrarPedidoPage extends StatelessWidget {
   const CadastrarPedidoPage({super.key});
-
-  @override
-  State<CadastrarPedidoPage> createState() => _CadastrarPedidoPageState();
-}
-
-class _CadastrarPedidoPageState extends State<CadastrarPedidoPage> {
-  bool _carregou = false;
-
-  @override
-  void initState() {
-    super.initState();
-    AnalyticsService().trackPageView('CadastrarPedido');
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _carregou = true;
-      });
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // nothing to do
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFf6f6f6),
-
-      body: !_carregou
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  const HeaderLogin(showBack: true),
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: CadastroCampanhaForm(),
-                  ),
-                ],
-              ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const HeaderLogin(showBack: true),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: CadastroCampanhaForm(),
             ),
+          ],
+        ),
+      ),
     );
   }
 }

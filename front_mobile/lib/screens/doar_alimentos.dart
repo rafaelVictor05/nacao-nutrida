@@ -6,7 +6,6 @@ import '../components/header_login.dart';
 import '../components/footer.dart';
 import '../models/campaign.dart';
 import '../models/auth_manager.dart';
-import '../services/analytics_service.dart';
 import '../services/api_service.dart';
 import '../config/api.dart';
 
@@ -25,7 +24,6 @@ class _DoarAlimentosPageState extends State<DoarAlimentosPage> {
   @override
   void initState() {
     super.initState();
-    AnalyticsService().trackPageView('Doar Alimentos');
     // Inicializa o mapa de doações com os alimentos da campanha
     for (String alimento in widget.campanha.tiposAlimento) {
       _doacoes[alimento] = 0;

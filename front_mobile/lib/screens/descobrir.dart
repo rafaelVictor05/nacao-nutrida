@@ -5,7 +5,6 @@ import '../components/header.dart';
 import '../components/header_login.dart';
 import '../components/footer.dart';
 import '../models/auth_manager.dart';
-import '../services/analytics_service.dart';
 import '../services/api_service.dart';
 import '../config/api.dart';
 import '../models/campaign.dart';
@@ -32,7 +31,6 @@ class _DescobrirPageState extends State<DescobrirPage> {
   @override
   void initState() {
     super.initState();
-    AnalyticsService().trackPageView('Descobrir');
     _fetchEstadosCidades();
     _fetchCampanhas();
   }
@@ -216,10 +214,7 @@ class _DescobrirPageState extends State<DescobrirPage> {
           children: [
             if (Provider.of<AuthManager>(context).isLoggedIn)
               HeaderLogin(
-                onBack: () {
-                  AnalyticsService().trackButtonClick('Voltar', 'Descobrir');
-                  Navigator.pop(context);
-                },
+                onBack: () => Navigator.pop(context),
                 showBack: true,
               )
             else
@@ -229,10 +224,7 @@ class _DescobrirPageState extends State<DescobrirPage> {
                 onRightButtonPressed: () {
                   Navigator.of(context).pushNamed('/cadastro-usuario');
                 },
-                onBack: () {
-                  AnalyticsService().trackButtonClick('Voltar', 'Descobrir');
-                  Navigator.pop(context);
-                },
+                onBack: () => Navigator.pop(context),
               ),
 
             // Barra de pesquisa
