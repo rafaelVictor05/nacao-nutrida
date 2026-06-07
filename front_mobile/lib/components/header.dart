@@ -56,56 +56,22 @@ class Header extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.of(context).pushNamed('/descobrir'),
-                      style: TextButton.styleFrom(
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        'Campanhas',
-                        style: TextStyle(
-                          color: Color(0xFF027ba1),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    _HeaderLink(
+                      label: 'Descobrir',
+                      onTap: () =>
+                          Navigator.of(context).pushNamed('/descobrir-campanha'),
                     ),
-                    TextButton(
-                      onPressed: () =>
+                    const SizedBox(width: 12),
+                    _HeaderLink(
+                      label: 'Criar',
+                      onTap: () =>
                           Navigator.of(context).pushNamed('/login'),
-                      style: TextButton.styleFrom(
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        'Criar',
-                        style: TextStyle(
-                          color: Color(0xFF027ba1),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                     ),
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.of(context).pushNamed('/login'),
-                      style: TextButton.styleFrom(
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Color(0xFF027ba1),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    const SizedBox(width: 12),
+                    _HeaderLink(
+                      label: 'Login',
+                      onTap: onRightButtonPressed ??
+                          () => Navigator.of(context).pushNamed('/login'),
                     ),
                   ],
                 ),
@@ -118,6 +84,7 @@ class Header extends StatelessWidget {
   }
 
   Widget _buildLogoWithText(String? text) {
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -133,6 +100,24 @@ class Header extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _HeaderLink extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _HeaderLink({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 14, color: Colors.black87),
+      ),
     );
   }
 }

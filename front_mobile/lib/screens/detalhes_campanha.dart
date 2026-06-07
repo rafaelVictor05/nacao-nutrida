@@ -488,6 +488,7 @@ class _DoacaoBottomSheet extends StatefulWidget {
 
 class _DoacaoBottomSheetState extends State<_DoacaoBottomSheet> {
   late final List<TextEditingController> _controllers;
+  final TextEditingController _comentarioController = TextEditingController();
   List<String> _recomendacoes = [];
   bool _enviando = false;
   bool _loadingRec = false;
@@ -506,6 +507,7 @@ class _DoacaoBottomSheetState extends State<_DoacaoBottomSheet> {
     for (final c in _controllers) {
       c.dispose();
     }
+    _comentarioController.dispose();
     super.dispose();
   }
 
@@ -588,6 +590,8 @@ class _DoacaoBottomSheetState extends State<_DoacaoBottomSheet> {
           'cd_campanha_doacao': widget.campanha.id,
         },
         'alimentos_doacao': alimentosDoacao,
+        if (_comentarioController.text.trim().isNotEmpty)
+          'descricao': _comentarioController.text.trim(),
       };
 
       final resp = await api.post('/doacoes', payload);
@@ -901,7 +905,39 @@ class _DoacaoBottomSheetState extends State<_DoacaoBottomSheet> {
                       ),
                     ),
 
-                  const SizedBox(height: 16),
+                  // Comentário opcional
+                  const SizedBox(height: 8),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Adicione um comentário (opcional)',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF191929),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _comentarioController,
+                    maxLines: 3,
+                    maxLength: 300,
+                    decoration: InputDecoration(
+                      hintText: 'Escreva uma mensagem para o organizador...',
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      contentPadding: const EdgeInsets.all(12),
+                    ),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+
+                  const SizedBox(height: 8),
                 ],
               ),
             ),

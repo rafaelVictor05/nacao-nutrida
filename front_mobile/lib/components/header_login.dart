@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/auth_manager.dart';
 
 class HeaderLogin extends StatelessWidget implements PreferredSizeWidget {
   final bool showBack;
@@ -75,8 +77,10 @@ class HeaderLogin extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Future<void> _logout(BuildContext context) async {
+    final authManager = Provider.of<AuthManager>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    authManager.logout();
 
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
